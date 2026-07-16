@@ -11,6 +11,12 @@
 <meta name="author" content="Nahor Posters">
 <link rel="canonical" href="https://nahorposters.in/">
 
+<!-- Favicon (browser tab / Google Search icon) — uses LOGO.png.
+     The on-page logo (navbar, footer, preloader) keeps using LOGO.webp. -->
+<link rel="icon" href="/images/LOGO.png" type="image/png">
+<link rel="shortcut icon" href="/images/LOGO.png" type="image/png">
+<link rel="apple-touch-icon" href="/images/LOGO.png">
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nahorposters.in/">
@@ -602,6 +608,51 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 .collection-name{ position:relative; z-index:2; font-family: var(--font-display); font-weight:600; font-size: 20px; }
 .collection-count{ position:relative; z-index:2; font-family: var(--font-mono); font-size:11px; color: var(--muted); margin-top:6px; }
 
+/* ============ COLLECTIONS BOXES (home page — image-only, 1:1) ============
+   Same horizontal swipe/carousel row as every other product shelf
+   (.product-grid) — just larger boxes, no card body/text underneath. */
+.product-grid .collection-box{
+  scroll-snap-align: start;
+  flex: 0 0 calc(23% - 17px); /* ~4 large boxes on wide desktop */
+  min-width: 0;
+}
+@media (max-width: 1400px){
+  .product-grid .collection-box{ flex: 0 0 calc(30% - 15.4px); } /* ~3 boxes */
+}
+@media (max-width: 1100px){
+  .product-grid .collection-box{ flex: 0 0 calc(42% - 12.8px); } /* ~2.4 boxes */
+}
+@media (max-width: 700px){
+  .product-grid .collection-box{ flex: 0 0 62%; } /* 1 full box + peek */
+}
+@media (max-width: 480px){
+  .product-grid .collection-box{ flex: 0 0 72%; }
+}
+
+.collection-box{
+  position:relative; aspect-ratio: 1/1; border-radius: var(--radius-md);
+  overflow:hidden; display:block; width:100%;
+  border: 1px solid var(--glass-border);
+  background: var(--black-2);
+  transition: transform .5s var(--ease-lux), box-shadow .5s, border-color .4s;
+}
+.collection-box img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition: transform .6s var(--ease-lux);
+}
+.collection-box:hover{ transform: translateY(-6px); box-shadow: 0 20px 46px rgba(169,131,62,.22); border-color: var(--glass-border-red); }
+.collection-box:hover img{ transform: scale(1.07); }
+.collection-box:active{ transform: translateY(-2px) scale(.99); }
+
+/* ============ COLLECTION FILTER VIEW (opens in the Quick View modal shell) ============ */
+.collection-view-grid{
+  display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;
+}
+@media (min-width: 700px){ .collection-view-grid{ grid-template-columns: repeat(3, 1fr); gap:20px; } }
+@media (min-width: 1000px){ .collection-view-grid{ grid-template-columns: repeat(4, 1fr); } }
+.collection-view-grid .product-card{ width:100%; }
+.collection-view-empty{ padding:60px 0; color: var(--muted); text-align:center; font-size:14px; }
+
 /* ============ PRODUCT GRID -> HORIZONTAL CAROUSEL ============ */
 .products.alt{ background: linear-gradient(180deg, transparent, rgba(169,131,62,0.03), transparent); }
 
@@ -961,6 +1012,83 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
 }
 .custom-frame.has-image .custom-frame-tag{ display:block; }
 
+/* ============ DESIGN YOUR OWN PRINTS — tile grid ============ */
+.dyo-grid{
+  display:grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width:700px){ .dyo-grid{ gap: 12px; } }
+
+/* Desktop only — 4 smaller tiles in a single row instead of 2x2 huge boxes */
+@media (min-width:701px){
+  .dyo-grid{
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .dyo-tile{ aspect-ratio: 3/3.5; }
+  .dyo-tile-eyebrow{ top:14px; left:14px; font-size:13px; }
+  .dyo-tile-title{ top:31px; left:14px; right:14px; font-size: clamp(13px,1.3vw,15px); }
+  .dyo-tile-cta{ left:14px; bottom:14px; font-size:10px; padding:6px 11px; }
+}
+
+.dyo-tile{
+  position:relative; display:block; width:100%; aspect-ratio: 1/1.05;
+  border-radius: var(--radius-md); overflow:hidden;
+  border: 1px solid var(--glass-border); background: var(--black-3);
+  cursor:pointer; padding:0; text-align:left;
+  transition: transform .5s var(--ease-lux), box-shadow .5s var(--ease-lux);
+}
+.dyo-tile:hover{ transform: translateY(-5px); box-shadow: 0 26px 54px rgba(20,18,15,0.16); }
+.dyo-tile-img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  transition: transform .6s var(--ease-lux);
+}
+.dyo-tile:hover .dyo-tile-img{ transform: scale(1.045); }
+.dyo-tile-overlay{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(20,18,15,.42) 0%, rgba(20,18,15,0) 38%, rgba(20,18,15,0) 60%, rgba(20,18,15,.5) 100%);
+}
+.dyo-tile-eyebrow{
+  position:absolute; top:20px; left:20px; z-index:2;
+  font-family: Georgia, "Times New Roman", serif; font-style:italic;
+  font-size: 15px; color:#fff;
+}
+.dyo-tile-title{
+  position:absolute; top:42px; left:20px; right:20px; z-index:2;
+  font-family: var(--font-display); font-weight:800; text-transform:uppercase;
+  font-size: clamp(16px,2.3vw,20px); line-height:1.15; letter-spacing:.01em; color:#fff;
+}
+.dyo-tile-cta{
+  position:absolute; left:20px; bottom:18px; z-index:2;
+  display:inline-flex; align-items:center; gap:7px;
+  font-family: var(--font-mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  color: var(--charcoal-text); background: var(--crimson-glow);
+  padding: 8px 14px; border-radius:100px;
+  transition: background .3s, gap .3s;
+}
+.dyo-tile:hover .dyo-tile-cta{ gap:10px; }
+
+/* ============ QUICK VIEW — "Design Your Own" photo upload ============ */
+.qv-upload-row{ display:flex; flex-direction:column; gap:10px; }
+.qv-upload-drop{
+  display:flex; align-items:center; gap:14px;
+  padding: 14px 16px; border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--glass-border-red);
+  background: var(--glass-bg); cursor:pointer;
+  transition: border-color .3s, background .3s;
+}
+.qv-upload-drop:hover, .qv-upload-drop.dragover{ border-color: var(--crimson-glow); background: rgba(217,182,121,0.08); }
+.qv-upload-drop i{ font-size: 20px; color: var(--crimson-glow); flex-shrink:0; }
+.qv-upload-thumb{
+  width:44px; height:44px; border-radius:10px; object-fit:cover; flex-shrink:0;
+  border: 1px solid var(--glass-border);
+}
+.qv-upload-label{ font-size:13.5px; color: var(--muted); }
+.qv-upload-drop.has-image .qv-upload-label{ color: var(--white); }
+.qv-upload-hint{ font-size:11.5px; color: var(--muted-2); }
+
 /* ============ REVIEWS ============ */
 .reviews-track{
   display:grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
@@ -1247,6 +1375,17 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
 }
 .quickview-modal.open{ opacity:1; visibility:visible; pointer-events:auto; }
 
+/* Product Quick View can be opened while the Collection view is
+   already open underneath it (tapping a product card inside a
+   collection) — both share the same base z-index via .quickview-modal,
+   so without this override, whichever sits later in the DOM would
+   render on top regardless of which was opened more recently. This
+   guarantees the product page always wins that stack. */
+#quickviewModal{ z-index: 820; }
+/* Billing (Buy Now / Checkout) can in turn open on top of an already-
+   open product Quick View, so it needs to outrank that too. */
+#billingModal{ z-index: 830; }
+
 .qv-topbar{
   position: sticky; top:0; z-index: 30;
   display:flex; align-items:center; justify-content:space-between; gap:14px;
@@ -1441,6 +1580,11 @@ transition:.25s;
    buttons, mirroring their two-up, equal-width layout. */
 .qv-size-row{ display:flex; align-items:center; gap:16px; margin-top:22px; }
 .qv-size-options{ display:flex; gap:10px; flex:1; }
+@media (max-width:560px){
+  .qv-size-row{ flex-direction:column; align-items:stretch; gap:10px; }
+  .qv-size-options{ width:100%; }
+  .qv-size-options .qv-size-btn{ flex:1; padding:11px 8px; }
+}
 .qv-size-btn{
   flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
   padding:11px 14px; border:1px solid var(--glass-border); border-radius:100px;
@@ -1862,6 +2006,26 @@ el.innerHTML=s;
     </div>
   </section>
 
+  <!-- ============================= -->
+  <!-- COLLECTIONS — image-only boxes, see COLLECTION_BOXES in the script.
+       Clicking a box opens a filtered product view (Quick View shell)
+       showing only designs whose `collection` tag matches that box. -->
+  <!-- ============================= -->
+  <section class="products" id="collections">
+    <div class="section-head">
+      <p class="section-eyebrow">Shop by Vibe</p>
+      <h2 class="section-title">Collections</h2>
+      <p class="section-desc">Twelve worlds of wall art — tap a box to jump straight into that collection.</p>
+    </div>
+    <div class="category-block" id="collectionsBlock">
+      <div class="product-grid" id="grid-collections"><!-- injected --></div>
+      <div class="carousel-controls" id="carousel-controls-collections">
+        <button class="carousel-arrow" data-carousel-prev aria-label="Previous collections" disabled><i class="fa-solid fa-chevron-left"></i></button>
+        <span class="carousel-counter"><span class="current">1</span> / <span class="total">12</span></span>
+        <button class="carousel-arrow" data-carousel-next aria-label="Next collections"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
 
   <!-- ============================= -->
   <!-- TRENDING & NEW ARRIVALS — see NEW_ARRIVAL_ITEMS in the script -->
@@ -1897,65 +2061,18 @@ el.innerHTML=s;
   </section>
 
   <!-- ============================= -->
-  <!-- CUSTOM POSTERS -->
+  <!-- DESIGN YOUR OWN PRINTS -->
   <!-- ============================= -->
   <section class="custom" id="custom">
-    <div class="custom-inner">
-      <div class="custom-copy">
-        <p class="section-eyebrow">Made To Order</p>
-        <h2 class="section-title">Design Your Own Poster</h2>
-        <p class="section-desc">Upload any image and we'll print it on 300GSM paper with adhesive tabs on the back — peel and stick straight to your wall.</p>
-
-        <div class="custom-controls">
-          <label class="upload-drop" id="uploadDrop">
-            <div id="uploadPreviewList"></div>
-            <input
-               type="file"
-               id="customUpload"
-               accept="image/*"
-               multiple
-                hidden
->
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span id="uploadLabel">
-Upload Image(s)
-</span>
-          </label>
-
-          <div class="option-row">
-            <span class="option-label">Choose Your Pack</span>
-            <div class="chip-group" data-group="pack" id="customPackGroup"><!-- injected by JS from CATEGORIES --></div>
-          </div>
-
-          <div class="option-row">
-            <span class="option-label">Orientation</span>
-            <div class="chip-group" data-group="orientation">
-              <button class="chip active" data-value="Portrait">Portrait</button>
-              <button class="chip" data-value="Landscape">Landscape</button>
-            </div>
-          </div>
-
-          <textarea class="custom-instructions" id="customInstructions" placeholder="Instructions for our print team (optional)"></textarea>
-
-          <button class="btn btn-primary btn-wide" id="customOrderBtn" data-magnetic>
-            <span id="customOrderLabel">Add Custom Poster — ₹149</span>
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-          <p class="newsletter-note" style="text-align:left; margin-top:0;">Delivery charges are calculated at checkout.</p>
-        </div>
-      </div>
-
-      <div class="custom-preview">
-        <div class="custom-frame" id="customFrame">
-          <div class="custom-frame-inner" id="customFrameInner">
-            <i class="fa-solid fa-image"></i>
-            <span>Live Preview</span>
-          </div>
-          <div class="custom-frame-tag" id="customFrameTag">300GSM · Adhesive Back</div>
-        </div>
-      </div>
+    <div class="section-head centered">
+      <p class="section-eyebrow">Made To Order</p>
+      <h2 class="section-title">Design Your Own Prints</h2>
+      <p class="section-desc">Upload any image and we'll print it on 300GSM paper with adhesive tabs on the back — peel and stick straight to your wall.</p>
     </div>
+
+    <div class="dyo-grid" id="dyoGrid"><!-- injected by JS from the "design-your-own" CATEGORY --></div>
   </section>
+
 
   <!-- ============================= -->
   <!-- REVIEWS -->
@@ -2210,6 +2327,15 @@ Upload Image(s)
     <span class="qv-topbar-spacer"></span>
   </div>
   <div class="billing-body" id="billingBody"><!-- injected --></div>
+</div>
+
+<div class="quickview-modal" id="collectionModal">
+  <div class="qv-topbar">
+    <button class="qv-back" id="collectionClose" aria-label="Back to shop"><i class="fa-solid fa-arrow-left"></i><span>Back to shop</span></button>
+    <span class="qv-topbar-brand" id="collectionModalTitle">Nahor Posters</span>
+    <span class="qv-topbar-spacer"></span>
+  </div>
+  <div class="quickview-body" id="collectionModalBody"><!-- injected --></div>
 </div>
 
 <!-- Toast -->
@@ -3300,7 +3426,81 @@ const CATEGORIES = [
         ]
       }
     ]
-}
+},
+  {
+    /* "Design Your Own" — the 4 tiles in the Design Your Own Prints
+       section further down the page. `hidden: true` keeps it out of
+       the auto-generated "Shop by Pack" grid (it gets its own tile
+       layout instead) while still working everywhere else — search,
+       wishlist, cart, Quick View, share links — exactly like any
+       other category, since it's still a normal CATEGORIES entry. */
+    id: "design-your-own",
+    name: "Design Your Own Prints",
+    sub: "Upload your own photo — we print it on 300GSM paper and ship to your door",
+    price: 149,
+    hidden: true,
+    sizes: [
+      { key: "A4", label: "A4", price: 149 },
+      { key: "A5", label: "A5", price: 99 },
+      { key: "A3", label: "A3", price: 249 },
+      { key: "13x19", label: "13x19\"", price: 349 }
+    ],
+    designs: [
+      {
+        id: "dyo-1", name: "Custom Poster", collection: "Design Your Own",
+        tileLabel: "Poster",
+        rating: 4.9, reviews: 0, stock: "In Stock",
+        images: [
+          "images/C7PC1IM1_result.webp",
+          "images/C7PC1IM2_result.webp"
+        ]
+      },
+      {
+        id: "dyo-2", name: "Custom Split Poster", collection: "Design Your Own",
+        tileLabel: "Split Poster",
+        note: "3 posters combine into 1 single piece on your wall.",
+        rating: 4.9, reviews: 0, stock: "In Stock",
+        sizes: [
+          { key: "A4", label: "A4", price: 199 },
+          { key: "A3", label: "A3", price: 279 }
+        ],
+        images: [
+          "images/C7PC2IM1_result.webp",
+          "images/C7PC2IM2_result.webp"
+        ]
+      },
+      {
+        id: "dyo-3", name: "Custom Split Poster — 2x2", collection: "Design Your Own",
+        tileLabel: "Split Poster 2x2",
+        note: "4 A4 size posters combine into 1 single piece on your wall.",
+        rating: 4.9, reviews: 0, stock: "In Stock",
+        sizes: [
+          { key: "A4", label: "A4", price: 197 }
+        ],
+        images: [
+          "images/C7PC3IM1_result.webp",
+          "images/C7PC3IM2_result.webp"
+        ]
+      },
+      {
+        id: "dyo-4", name: "Custom Retro Prints", collection: "Design Your Own",
+        tileLabel: "Retro Prints",
+        rating: 4.9, reviews: 0, stock: "In Stock",
+        sizeLabel: "Number of Prints",
+        sizes: [
+          { key: "10", label: "10 Pics", price: 97 },
+          { key: "20", label: "20 Pics", price: 187 },
+          { key: "30", label: "30 Pics", price: 244 },
+          { key: "40", label: "40 Pics", price: 325 },
+          { key: "50", label: "50 Pics", price: 409 }
+        ],
+        images: [
+          "images/C7PC4IM1_result.webp",
+          "images/C7PC4IM2_result.webp"
+        ]
+      }
+    ]
+  }
 
   /* You can also add a brand-new CATEGORY (a 5th product line) by
      copying one of the four blocks above — give it a unique id,
@@ -3373,6 +3573,65 @@ function findDesign(designId){
   return null;
 }
 
+/* ==================================================================
+   COLLECTIONS — home page boxes, image only (no text on the box).
+   ------------------------------------------------------------------
+   Each box's `name` is matched against every design's `collection`
+   field on the page (case-insensitive, plural/singular tolerant, and
+   works even when a design carries several tags like "Movie, Marvel").
+   Clicking a box opens a filtered grid of every matching design.
+
+   To change an image, edit the path below — put the file in the
+   same "images" folder as everything else, named e.g.
+   collection1_result.webp, collection2_result.webp, etc.
+   ================================================================== */
+const COLLECTION_BOXES = [
+  { name: "Anime",      image: "images/collection1_result.webp"  },
+  { name: "Cars",       image: "images/collection2_result.webp"  },
+  { name: "Gaming",     image: "images/collection3_result.webp"  },
+  { name: "Marvel",     image: "images/collection4_result.webp"  },
+  { name: "Webseries",  image: "images/collection5_result.webp"  },
+  { name: "Movies",     image: "images/collection6_result.webp"  },
+  { name: "Animations", image: "images/collection7_result.webp"  },
+  { name: "Sports",     image: "images/collection8_result.webp"  },
+  { name: "F1",         image: "images/collection9_result.webp"  },
+  { name: "Asthetic",   image: "images/collection10_result.webp" },
+  { name: "Artist",     image: "images/collection11_result.webp" },
+  { name: "Art",        image: "images/collection12_result.webp" }
+];
+
+/* Loose singular/plural normalizer so "Cars" matches "Car",
+   "Movies" matches "Movie", "Animations" matches "Animation", etc. */
+function normalizeCollectionWord(w){
+  w = String(w).toLowerCase().trim();
+  if (w.length > 3 && w.endsWith("s")) w = w.slice(0, -1);
+  return w;
+}
+
+/* A design's `collection` field can hold several comma-separated
+   tags (and each tag itself can be a couple of words, e.g.
+   "Gaming Nature"). We break everything down into single normalized
+   words and match on whole-word equality, so a box never partially
+   matches something unrelated (e.g. "Art" won't match "Artist"). */
+function designMatchesCollection(design, collectionName){
+  const key = normalizeCollectionWord(collectionName);
+  const words = String(design.collection || "")
+    .split(",")
+    .flatMap(part => part.trim().split(/\s+/))
+    .map(normalizeCollectionWord);
+  return words.includes(key);
+}
+
+function resolveCollectionItems(collectionName){
+  const items = [];
+  CATEGORIES.forEach(cat => {
+    cat.designs.forEach(d => {
+      if (designMatchesCollection(d, collectionName)) items.push({ design: d, category: cat });
+    });
+  });
+  return items;
+}
+
 </script>
 <script>
 /* ==================================================================
@@ -3440,6 +3699,18 @@ function findDesign(designId){
   function categoryHasSizes(category){ return Array.isArray(category.sizes) && category.sizes.length > 0; }
   function categoryMinPrice(category){ return categoryHasSizes(category) ? Math.min(...category.sizes.map(s => s.price)) : category.price; }
   function categorySizeByKey(category, key){ return categoryHasSizes(category) ? category.sizes.find(s => s.key === key) : null; }
+
+  /* Per-design size overrides (used by "Design Your Own", where each
+     of the 4 products has its own size/price options). Falls back to
+     the category's own sizes for every other product, so nothing
+     else on the site needs to change. */
+  function designSizes(design, category){
+    if (Array.isArray(design.sizes) && design.sizes.length) return design.sizes;
+    return categoryHasSizes(category) ? category.sizes : null;
+  }
+  function designHasSizes(design, category){ const s = designSizes(design, category); return !!(s && s.length); }
+  function designMinPrice(design, category){ const s = designSizes(design, category); return (s && s.length) ? Math.min(...s.map(x => x.price)) : category.price; }
+  function designSizeByKey(design, category, key){ const s = designSizes(design, category); return s ? s.find(x => x.key === key) : null; }
 
   /* ============================================================
      PRELOADER
@@ -4062,7 +4333,7 @@ function findDesign(designId){
         </div>
         <p class="pc-spec">${PAPER_SPEC}</p>
         <div class="pc-price-row">
-          <span class="pc-price">${categoryHasSizes(category) ? money(categoryMinPrice(category)) : money(category.price)}</span>
+          <span class="pc-price">${designHasSizes(design, category) ? money(designMinPrice(design, category)) : money(category.price)}</span>
           <span class="pc-price-sub">                               </span>
         </div>
         <button class="pc-cta" data-action="addcart"><i class="fa-solid fa-bag-shopping"></i> Add to Cart</button>
@@ -4135,7 +4406,7 @@ function findDesign(designId){
         if (action === "addcart"){
           // Categories with a size choice (A4/A6) can't be added straight
           // from the grid card — open Quick View so the size gets picked first.
-          if (categoryHasSizes(category)) openQuickview(design, category);
+          if (designHasSizes(design, category)) openQuickview(design, category);
           else addToCart(design, category);
         }
         if (action === "wishlist") toggleWishlist(design, actionEl);
@@ -4232,15 +4503,15 @@ function findDesign(designId){
   }
 
   function renderAllCategories(){
-    CATEGORIES.forEach(renderCategoryGrid);
+    CATEGORIES.filter(cat => !cat.hidden).forEach(renderCategoryGrid);
   }
 
   /* ============================================================
-     BUILD THE 4 CATEGORY SECTIONS (from data)
+     BUILD THE CATEGORY SECTIONS (from data)
      ============================================================ */
   function buildCategorySections(){
     const wrap = document.getElementById("categorySections");
-    wrap.innerHTML = CATEGORIES.map(cat => `
+    wrap.innerHTML = CATEGORIES.filter(cat => !cat.hidden).map(cat => `
       <div class="category-block" id="${cat.id}">
         <div class="category-block-head">
           <div>
@@ -4257,6 +4528,101 @@ function findDesign(designId){
         </div>
       </div>
     `).join("");
+  }
+
+  /* ============================================================
+     COLLECTIONS SECTION — home page boxes (image-only, 1:1),
+     rendered as the same horizontal swipe row used by every other
+     product shelf on the page (reuses initCategoryCarousel by
+     passing it a plain {id, designs} object — it only ever reads
+     those two fields).
+     ============================================================ */
+  function renderCollectionsSection(){
+    const wrap = document.getElementById("grid-collections");
+    if (!wrap) return;
+    wrap.innerHTML = COLLECTION_BOXES.map(c => `
+      <button type="button" class="collection-box" data-collection="${c.name}" aria-label="Shop the ${c.name} collection">
+        <img src="${c.image}" alt="" loading="lazy" decoding="async">
+      </button>
+    `).join("");
+    wrap.querySelectorAll(".collection-box").forEach(box => {
+      box.addEventListener("click", () => openCollectionView(box.dataset.collection));
+    });
+    initCategoryCarousel({ id: "collections", designs: COLLECTION_BOXES });
+  }
+
+  /* ============================================================
+     COLLECTION FILTER VIEW — opens in the Quick View modal shell,
+     showing every design whose collection tag matches the box that
+     was clicked, laid out as a normal wrapping grid (2-up on mobile,
+     more on wider screens) rather than the horizontal swipe rows
+     used everywhere else on the page.
+     ============================================================ */
+  /* Same short "fan-made / rights concerns" line shown at the very
+     bottom of the product Quick View — kept in one place so wording
+     always matches; just appended here instead of the full footer. */
+  function legalTailHTML(){
+    return `<div class="qv-legal-tail">
+        Fan-made design — not official merchandise unless stated. Rights concerns? Email <a href="mailto:nahorposters@gmail.com">nahorposters@gmail.com</a>
+      </div>`;
+  }
+
+  function renderCollectionView(name){
+    const titleEl = document.getElementById("collectionModalTitle");
+    const body = document.getElementById("collectionModalBody");
+    if (!titleEl || !body) return;
+
+    const items = resolveCollectionItems(name);
+    titleEl.textContent = "Nahor Posters · " + name;
+
+    if (!items.length){
+      body.innerHTML = `
+        <div class="section-head">
+          <p class="section-eyebrow">Collection</p>
+          <h2 class="section-title">${name}</h2>
+        </div>
+        <p class="collection-view-empty">More designs in this collection are coming soon.</p>
+        ${legalTailHTML()}`;
+      const modalEl = document.getElementById("collectionModal");
+      if (modalEl) modalEl.scrollTop = 0;
+      return;
+    }
+
+    body.innerHTML = `
+      <div class="section-head">
+        <p class="section-eyebrow">Collection</p>
+        <h2 class="section-title">${name}</h2>
+        <p class="section-desc">${items.length} design${items.length > 1 ? "s" : ""} in this collection.</p>
+      </div>
+      <div class="collection-view-grid" id="collectionViewGrid"></div>
+      ${legalTailHTML()}`;
+
+    const grid = document.getElementById("collectionViewGrid");
+    grid.innerHTML = items.map(({ design, category }) => productCardHTML(design, category)).join("");
+    grid.querySelectorAll(".product-card").forEach(card => {
+      const id = card.dataset.id;
+      const found = items.find(it => it.design.id === id);
+      if (found) wireProductCard(card, found.design, found.category);
+    });
+
+    const modalEl = document.getElementById("collectionModal");
+    if (modalEl) modalEl.scrollTop = 0;
+  }
+
+  function openCollectionView(name){
+    renderCollectionView(name);
+    openModal("collectionModal");
+    try{
+      history.pushState({ nahorCollection: name }, "", "#collection-" + encodeURIComponent(name));
+    }catch(e){}
+  }
+
+  function closeCollectionView(){
+    if (history.state && history.state.nahorCollection){
+      history.back();
+    } else {
+      closeModal("collectionModal");
+    }
   }
 
   function shareProduct(p){
@@ -4432,7 +4798,7 @@ function findDesign(designId){
   function addToCart(design, category, qty, sizeInfo){
     qty = qty || 1;
     const unitPrice = sizeInfo ? sizeInfo.price : category.price;
-    const categoryName = sizeInfo ? `${category.name} — ${sizeInfo.label} Size` : category.name;
+    const categoryName = sizeInfo ? `${category.name} — ${sizeInfo.label}${(design.sizeLabel && design.sizeLabel !== "Size") ? "" : " Size"}` : category.name;
     const key = design.id + "|" + category.id + (sizeInfo ? "|" + sizeInfo.key : "");
     const existing = state.cart.find(i => i.key === key);
     if (existing){
@@ -4595,33 +4961,45 @@ function findDesign(designId){
     document.getElementById("searchPanel").classList.remove("open");
   }
   function openModal(id){
-
-    const scrollY = window.scrollY;
-
-    document.body.dataset.scrollY = scrollY;
-
-    document.body.style.top = `-${scrollY}px`;
-
-    document.body.classList.add("modal-open");
+    // Only capture/lock scroll the first time (if a modal — e.g. the
+    // Collection view — is already open, the body is already fixed at
+    // scrollY:0, so re-capturing here would overwrite the real original
+    // offset with 0 and break the eventual scroll restore).
+    if (!document.body.classList.contains("modal-open")){
+      const scrollY = window.scrollY;
+      document.body.dataset.scrollY = scrollY;
+      document.body.style.top = `-${scrollY}px`;
+      document.body.classList.add("modal-open");
+    }
 
     document.getElementById(id).classList.add("open");
 
     document.getElementById("modalScrim").classList.add("open");
 }
+  /* Closes just one modal layer. If another modal (e.g. Collection
+     view underneath a product Quick View) is still open, the body
+     stays locked/scrolled as-is; only once the last one closes does
+     scroll get restored — otherwise opening a product from within a
+     collection, then going back, would prematurely unlock the page. */
+  function closeModal(id){
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("open");
+    const stillOpen = document.querySelector(".account-modal.open, .quickview-modal.open");
+    if (!stillOpen) unlockBodyScroll();
+  }
+  function unlockBodyScroll(){
+    document.getElementById("modalScrim").classList.remove("open");
+    const scrollY = parseInt(document.body.dataset.scrollY || "0");
+    document.body.classList.remove("modal-open");
+    document.body.style.top = "";
+    window.scrollTo(0, scrollY);
+  }
   function closeModals(){
 
     document.querySelectorAll(".account-modal, .quickview-modal")
         .forEach(m => m.classList.remove("open"));
 
-    document.getElementById("modalScrim").classList.remove("open");
-
-    const scrollY = parseInt(document.body.dataset.scrollY || "0");
-
-    document.body.classList.remove("modal-open");
-
-    document.body.style.top = "";
-
-    window.scrollTo(0, scrollY);
+    unlockBodyScroll();
 }
   function initOverlays(){
     document.getElementById("cartToggle").addEventListener("click", () => openDrawer("cartDrawer"));
@@ -4637,10 +5015,14 @@ function findDesign(designId){
     document.getElementById("accountClose").addEventListener("click", closeModals);
     document.getElementById("quickviewClose").addEventListener("click", closeProductPage);
     document.getElementById("billingClose").addEventListener("click", closeModals);
+    document.getElementById("collectionClose").addEventListener("click", closeCollectionView);
     document.getElementById("modalScrim").addEventListener("click", () => {
       const qv = document.getElementById("quickviewModal");
+      const cv = document.getElementById("collectionModal");
       if (qv && qv.classList.contains("open")){
         closeProductPage();
+      } else if (cv && cv.classList.contains("open")){
+        closeCollectionView();
       } else {
         closeModals();
       }
@@ -4650,7 +5032,9 @@ function findDesign(designId){
       if (e.key === "Escape"){
         closeDrawers();
         const qv = document.getElementById("quickviewModal");
+        const cv = document.getElementById("collectionModal");
         if (qv && qv.classList.contains("open")) closeProductPage();
+        else if (cv && cv.classList.contains("open")) closeCollectionView();
         else closeModals();
       }
     });
@@ -4714,7 +5098,7 @@ function findDesign(designId){
   function buyNowWhatsApp(design, category, qty, sizeInfo){
     qty = qty || 1;
     const unitPrice = sizeInfo ? sizeInfo.price : category.price;
-    const categoryName = sizeInfo ? `${category.name} — ${sizeInfo.label} Size` : category.name;
+    const categoryName = sizeInfo ? `${category.name} — ${sizeInfo.label}${(design.sizeLabel && design.sizeLabel !== "Size") ? "" : " Size"}` : category.name;
     goToBilling([{
       name: design.name, categoryId: category.id, categoryName: categoryName,
       price: unitPrice, qty: qty, img: design.images[0]
@@ -5515,7 +5899,7 @@ function findDesign(designId){
     const body = document.getElementById("quickviewBody");
     const stockLow = p.stock === "Low Stock";
     let qvQty = 1;
-    let qvSelectedSize = categoryHasSizes(category) ? category.sizes[0] : null;
+    let qvSelectedSize = designHasSizes(p, category) ? designSizes(p, category)[0] : null;
 
     const slides = p.images.map((src,i) => `<div class="pc-slide"><img src="${src}" alt="${p.name}${i>0?' view '+(i+1):''}" loading="${i===0?'eager':'lazy'}" decoding="async"${i===0?' fetchpriority="high"':''}></div>`).join("");
     const dots = p.images.map((_,i) => `<span class="pc-dot${i===0?" active":""}" data-idx="${i}"></span>`).join("");
@@ -5542,18 +5926,30 @@ function findDesign(designId){
           <h2>${p.name}</h2>
           <div class="pc-meta"><span class="pc-rating">${starRatingHTML(p.rating)} <span class="pc-rating-num">${p.rating}</span> <span>(${p.reviews} reviews)</span></span></div>
           <div class="pc-price-row">
-            <span class="pc-price" id="qvPriceDisplay">${money(categoryHasSizes(category) ? qvSelectedSize.price : category.price)}</span>
+            <span class="pc-price" id="qvPriceDisplay">${money(designHasSizes(p, category) ? qvSelectedSize.price : category.price)}</span>
             <span class="pc-price-sub">delivery calculated at checkout</span>
           </div>
-          <p class="qv-desc">${PAPER_SPEC}. ${category.sub}.</p>
+          <p class="qv-desc">${PAPER_SPEC}. ${p.note || category.sub}.</p>
           <p class="qv-stock${stockLow?" low":""}"><i class="fa-solid fa-circle" style="font-size:7px;"></i> ${p.stock}</p>
 
-          ${categoryHasSizes(category) ? `
+          ${designHasSizes(p, category) ? `
           <div class="qv-size-row">
-            <span class="qv-qty-label">Size</span>
+            <span class="qv-qty-label">${p.sizeLabel || "Size"}</span>
             <div class="qv-size-options" id="qvSizeOptions">
-              ${category.sizes.map(s => `<button type="button" class="qv-size-btn${s.key === qvSelectedSize.key ? " active" : ""}" data-size="${s.key}">${s.label}<span>${money(s.price)}</span></button>`).join("")}
+              ${designSizes(p, category).map(s => `<button type="button" class="qv-size-btn${s.key === qvSelectedSize.key ? " active" : ""}" data-size="${s.key}">${s.label}</button>`).join("")}
             </div>
+          </div>` : ""}
+
+          ${category.id === "design-your-own" ? `
+          <div class="qv-upload-row" id="qvUploadRow">
+            <span class="qv-qty-label">Your Photo</span>
+            <label class="qv-upload-drop" id="qvUploadDrop">
+              <input type="file" id="qvUploadInput" accept="image/*" hidden>
+              <img class="qv-upload-thumb" id="qvUploadThumb" hidden alt="">
+              <i class="fa-solid fa-cloud-arrow-up" id="qvUploadIcon"></i>
+              <span class="qv-upload-label" id="qvUploadLabel">Tap to upload your photo</span>
+            </label>
+            <p class="qv-upload-hint">JPG or PNG, ideally 1500px+ on the long side for a crisp print.</p>
           </div>` : ""}
 
           <div class="qv-qty-row">
@@ -5622,23 +6018,78 @@ function findDesign(designId){
       });
     });
 
-    if (categoryHasSizes(category)){
+    if (designHasSizes(p, category)){
       const priceEl = body.querySelector("#qvPriceDisplay");
       body.querySelectorAll(".qv-size-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          qvSelectedSize = categorySizeByKey(category, btn.dataset.size);
+          qvSelectedSize = designSizeByKey(p, category, btn.dataset.size);
           body.querySelectorAll(".qv-size-btn").forEach(b => b.classList.toggle("active", b === btn));
           if (priceEl) priceEl.textContent = money(qvSelectedSize.price);
         });
       });
     }
 
+    /* "Design Your Own" — photo upload. Reading the file locally
+       (FileReader → data URL) is enough to preview it and carry it
+       through to the cart/checkout thumbnail; nothing is uploaded
+       anywhere until the order is placed. */
+    let qvUploadedSrc = null;
+    let qvUploadedName = "";
+    const uploadDrop = body.querySelector("#qvUploadDrop");
+    if (uploadDrop){
+      const uploadInput = body.querySelector("#qvUploadInput");
+      const uploadThumb = body.querySelector("#qvUploadThumb");
+      const uploadIcon = body.querySelector("#qvUploadIcon");
+      const uploadLabel = body.querySelector("#qvUploadLabel");
+
+      function handleQvUpload(file){
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          qvUploadedSrc = e.target.result;
+          qvUploadedName = file.name;
+          uploadThumb.src = qvUploadedSrc;
+          uploadThumb.hidden = false;
+          uploadIcon.style.display = "none";
+          uploadLabel.textContent = `${file.name} — tap to change`;
+          uploadDrop.classList.add("has-image");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadInput.addEventListener("change", () => handleQvUpload(uploadInput.files[0]));
+      ["dragover","dragenter"].forEach(evt => uploadDrop.addEventListener(evt, e => { e.preventDefault(); uploadDrop.classList.add("dragover"); }));
+      ["dragleave","drop"].forEach(evt => uploadDrop.addEventListener(evt, e => { e.preventDefault(); uploadDrop.classList.remove("dragover"); }));
+      uploadDrop.addEventListener("drop", e => { e.preventDefault(); handleQvUpload(e.dataTransfer.files[0]); });
+    }
+
+    function flashUploadRequired(){
+      showToast("Please upload your photo first");
+      if (!uploadDrop) return;
+      uploadDrop.classList.add("dragover");
+      setTimeout(() => uploadDrop.classList.remove("dragover"), 500);
+    }
+
+    /* When a photo was uploaded, order the customer's actual photo
+       (with the marketing mockups kept as extra reference images)
+       instead of the plain mockup — so the cart/checkout thumbnail
+       shows what they're actually getting printed. */
+    function qvOrderDesign(){
+      if (!qvUploadedSrc) return p;
+      return Object.assign({}, p, {
+        images: [qvUploadedSrc, ...p.images],
+        uploadedPhotoName: qvUploadedName
+      });
+    }
+
     body.querySelector("#qvAddCart").addEventListener("click", () => {
-      addToCart(p, category, qvQty, qvSelectedSize);
+      if (category.id === "design-your-own" && !qvUploadedSrc){ flashUploadRequired(); return; }
+      addToCart(qvOrderDesign(), category, qvQty, qvSelectedSize);
       closeProductPage();
     });
     body.querySelector("#qvBuyNow").addEventListener("click", () => {
-      buyNowWhatsApp(p, category, qvQty, qvSelectedSize);
+      if (category.id === "design-your-own" && !qvUploadedSrc){ flashUploadRequired(); return; }
+      buyNowWhatsApp(qvOrderDesign(), category, qvQty, qvSelectedSize);
     });
     body.querySelector("#qvWishlist").addEventListener("click", (e) => {
       toggleWishlist(p, null);
@@ -5675,7 +6126,7 @@ function findDesign(designId){
     if (history.state && history.state.nahorProduct){
       history.back();
     } else {
-      closeModals();
+      closeModal("quickviewModal");
     }
   }
 
@@ -5685,141 +6136,72 @@ function findDesign(designId){
      product the browser lands on rather than just closing the modal —
      otherwise one "back" tap would skip straight past the previous
      product to the shop. Only close when there's no product left on
-     the stack (i.e. we've backed out past the first one opened). */
+     the stack (i.e. we've backed out past the first one opened).
+
+     A product opened from within a Collection view pushes its own
+     entry on top of that collection's entry — so going back from it
+     should land back on the Collection view (not the homepage), and
+     going back again from there should land on the homepage. Each
+     branch below closes whichever modal no longer matches the state
+     we've landed on, while leaving an underlying modal (e.g. the
+     Collection view under an open product page) untouched. */
   window.addEventListener("popstate", () => {
-    const modal = document.getElementById("quickviewModal");
-    if (history.state && history.state.nahorProduct){
-      const found = findDesign(history.state.nahorProduct);
+    const state = history.state || {};
+    const quickviewEl = document.getElementById("quickviewModal");
+    const collectionEl = document.getElementById("collectionModal");
+
+    if (state.nahorProduct){
+      const found = findDesign(state.nahorProduct);
       if (found){
         renderQuickviewContent(found.design, found.category);
-        if (modal && !modal.classList.contains("open")) openModal("quickviewModal");
-        return;
+        if (quickviewEl && !quickviewEl.classList.contains("open")) openModal("quickviewModal");
+        return; // whatever's underneath (e.g. a Collection view) stays as-is
       }
     }
-    if (modal && modal.classList.contains("open")){
-      closeModals();
+
+    // Not on a product state — the product page shouldn't linger open.
+    if (quickviewEl && quickviewEl.classList.contains("open")) closeModal("quickviewModal");
+
+    if (state.nahorCollection){
+      renderCollectionView(state.nahorCollection);
+      if (collectionEl && !collectionEl.classList.contains("open")) openModal("collectionModal");
+      return;
     }
+
+    // Not on a collection state either — back to the homepage.
+    if (collectionEl && collectionEl.classList.contains("open")) closeModal("collectionModal");
   });
 
   /* ============================================================
-     CUSTOM POSTER BUILDER
+     DESIGN YOUR OWN PRINTS — tile grid
+     Reads the "design-your-own" CATEGORY (id: design-your-own) and
+     renders one photo tile per design. Clicking a tile opens the
+     exact same Quick View used for every other product on the site
+     (size picker, qty, add to cart, wishlist, share, related — all
+     of it) — Quick View itself adds a photo-upload field whenever
+     category.id === "design-your-own" (see renderQuickviewContent).
      ============================================================ */
-  function initCustomBuilder(){
-    const dropZone = document.getElementById("uploadDrop");
-    const input = document.getElementById("customUpload");
-    const label = document.getElementById("uploadLabel");
-    const frame = document.getElementById("customFrame");
-    const frameInner = document.getElementById("customFrameInner");
-    const frameTag = document.getElementById("customFrameTag");
-    const orderBtn = document.getElementById("customOrderBtn");
-    const orderLabel = document.getElementById("customOrderLabel");
-    const packGroup = document.getElementById("customPackGroup");
+  function initDesignYourOwn(){
+    const grid = document.getElementById("dyoGrid");
+    if (!grid) return;
+    const category = CATEGORIES.find(c => c.id === "design-your-own");
+    if (!category) return;
 
-    // Design Your Own uses its own packs only (not linked to collections)
-    const CUSTOM_PACKS = [
-      { id:"custom-a3", name:"A3 1 Pic", price:97 },
-      { id:"custom-a4-3", name:"A4 Set of 3", price:147 },
-      { id:"custom-a4-6", name:"A4 Set of 6", price:247 }
-    ];
+    grid.innerHTML = category.designs.map(d => `
+      <button type="button" class="dyo-tile" data-id="${d.id}" aria-label="${d.name} — open Quick View">
+        <img class="dyo-tile-img" src="${d.images[0]}" alt="${d.name}" loading="lazy" decoding="async">
+        <span class="dyo-tile-overlay"></span>
+        <span class="dyo-tile-eyebrow">Custom</span>
+        <span class="dyo-tile-title">${d.tileLabel || d.name}</span>
+        <span class="dyo-tile-cta">Get Yours <i class="fa-solid fa-arrow-right"></i></span>
+      </button>
+    `).join("");
 
-    packGroup.innerHTML = CUSTOM_PACKS.map((pack, i) =>
-      `<button class="chip${i===0?" active":""}" data-value="${pack.id}">${pack.name} — ${money(pack.price)}</button>`
-    ).join("");
-
-    const selections = { categoryId: CUSTOM_PACKS[0].id, orientation: "Portrait" };
-    let uploadedSrc = null;
-    let uploadedName = "";
-
-    function updateOrderLabel(){
-      const pack = CUSTOM_PACKS.find(p=>p.id===selections.categoryId);
-      orderLabel.textContent = `Add Custom Poster — ${money(pack.price)}`;
-    }
-    updateOrderLabel();
-
-    document.querySelectorAll(".custom .chip-group").forEach(group => {
-      const key = group.dataset.group;
-      group.querySelectorAll(".chip").forEach(chip => {
-        chip.addEventListener("click", () => {
-          group.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-          chip.classList.add("active");
-          if (key === "pack"){
-            selections.categoryId = chip.dataset.value;
-            updateOrderLabel();
-          }
-          if (key === "orientation"){
-            selections.orientation = chip.dataset.value;
-            frame.style.aspectRatio = chip.dataset.value === "Landscape" ? "4/3" : "3/4";
-          }
-        });
+    grid.querySelectorAll(".dyo-tile").forEach(tile => {
+      tile.addEventListener("click", () => {
+        const design = category.designs.find(d => d.id === tile.dataset.id);
+        if (design) openQuickview(design, category);
       });
-    });
-
-    function handleFile(file){
-      if (!file || !file.type.startsWith("image/")) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        uploadedSrc = e.target.result;
-        uploadedName = file.name;
-        frameInner.style.display = "none";
-        let img = frame.querySelector("img");
-        if (!img){ img = document.createElement("img"); frame.appendChild(img); }
-        img.src = uploadedSrc;
-        frame.classList.add("has-image");
-        label.textContent = file.name;
-        if (window.gsap) gsap.fromTo(frame, { scale: 0.94, opacity: 0.6 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" });
-      };
-      reader.readAsDataURL(file);
-    }
-    function requiredUploads(){
-
-    const id = selections.categoryId;
-
-    if(id==="custom-a3") return 1;
-    if(id==="custom-a4-3") return 3;
-    if(id==="custom-a4-6") return 6;
-
-    return 1;
-}
-    dropZone.addEventListener("click", () => input.click());
-    input.addEventListener("change", () => {
-
-    const need = requiredUploads();
-
-    if(input.files.length !== need){
-
-        showToast(`Please upload exactly ${need} image${need>1?"s":""}`);
-
-        input.value="";
-
-        return;
-    }
-
-    label.textContent=`${input.files.length} image(s) selected`;
-
-    handleFile(input.files[0]);
-
-});
-    ["dragover","dragenter"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("dragover"); }));
-    ["dragleave","drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("dragover"); }));
-    dropZone.addEventListener("drop", e => handleFile(e.dataTransfer.files[0]));
-
-    orderBtn.addEventListener("click", () => {
-      if (!uploadedSrc){
-        showToast("Upload an image to continue");
-        dropZone.classList.add("dragover");
-        setTimeout(() => dropZone.classList.remove("dragover"), 500);
-        return;
-      }
-      const pack=CUSTOM_PACKS.find(p=>p.id===selections.categoryId);
-      const cat={id:pack.id,name:pack.name,price:pack.price};
-      const customDesign = {
-        id: "custom-" + Date.now(),
-        name: `Custom Poster — ${uploadedName || "Your Image"}`,
-        collection: "Custom Upload",
-        images: [uploadedSrc],
-        custom: true
-      };
-      addToCart(customDesign, cat);
     });
   }
 
@@ -5919,13 +6301,14 @@ function findDesign(designId){
     initEmbers();
     initOverlays();
     initSearch();
-    initCustomBuilder();
+    initDesignYourOwn();
     initFAQ();
     initNewsletter();
     initCardTilt();
 
     buildCategorySections();
     renderAllCategories();
+    renderCollectionsSection();
     renderSaleSection();
     renderTrendingSection();
     renderCart();
