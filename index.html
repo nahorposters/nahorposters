@@ -161,7 +161,7 @@ body.modal-open{
 
 a{ color: inherit; text-decoration:none; }
 button{ font-family: inherit; cursor: pointer; border:none; background:none; color:inherit; }
-input, textarea{ font-family: inherit; background:none; border:none; color: var(--white); outline:none; font-size:16px; }
+input, textarea{ font-family: inherit; background:none; border:none; color: var(--white); outline:none; font-size:16px; -webkit-appearance:none; appearance:none; border-radius:0; box-sizing:border-box; }
 ul{ list-style:none; }
 img{ max-width:100%; display:block; }
 
@@ -1125,7 +1125,8 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
 }
 @media (max-width: 480px){
   .newsletter-inner{ padding: 34px 20px; }
-  .newsletter-form{ flex-direction: column; border-radius: var(--radius-md); }
+  .newsletter-form{ flex-direction: column; border-radius: 100px; padding: 8px; gap:10px; }
+  .newsletter-form input{ width:100%; border-radius:100px; padding: 13px 20px; }
   .newsletter-form button{ width: 100%; justify-content:center; display:flex; }
 }
 .newsletter-form{
@@ -1133,7 +1134,7 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
   border: 1px solid var(--glass-border); border-radius: 100px;
   padding: 6px; background: var(--black-2);
 }
-.newsletter-form input{ flex:1; padding: 12px 18px; font-size:14px; }
+.newsletter-form input{ flex:1; min-width:0; padding: 12px 18px; font-size:14px; }
 .newsletter-form input::placeholder{ color: var(--muted-2); }
 .newsletter-form button{
   padding: 12px 26px; border-radius: 100px; font-size:13.5px; font-weight:600;
@@ -2417,7 +2418,7 @@ const CATEGORIES = [
     price: 227,
     designs: [
       {
-        id: "a3-1", name: "ITACHI RED", collection: "Anime",
+        id: "a3-1", name: "Itachi: Crimson Uchiha", collection: "Anime",
         rating: 4.8, reviews: 6, stock: "In Stock",
         images: [
           "images/C1PC1IM1_result.webp",
@@ -2426,48 +2427,48 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a3-2", name: "GAME OF THRONES", collection: "Webseries",
+        id: "a3-2", name: "Batman: Scarlet Knight", collection: "DC, Movie",
         rating: 4.9, reviews: 0, stock: "In Stock",
         images: [
-          "images/C1PC2IM1_result.webp",
-          "images/C1PC2IM2_result.webp",
+          "images/C1PC43IM1_result.webp",
+          "images/C1PC43IM2_result.webp",
           "images/C1IM3_result.webp"
         ]
       },
       {
-        id: "a3-3", name: "NEYMAR-BRAZIL", collection: "Sports",
+        id: "a3-3", name: "Spider-Man: Midnight Web", collection: "Marvel",
         rating: 4.7, reviews: 0, stock: "In Stock",
         images: [
-          "images/C1PC3IM1_result.webp",
-          "images/C1PC3IM2_result.webp",
+          "images/C1PC41IM1_result.webp",
+          "images/C1PC41IM2_result.webp",
           "images/C1IM3_result.webp"
         ]
       },
       {
-        id: "a3-4", name: "YOURNAME", collection: "Anime",
+        id: "a3-4", name: "Superman: Crimson Guardian", collection: "DC, Movie",
         rating: 4.6, reviews: 0, stock: "Low Stock",
         images: [
-          "images/C1PC4IM1_result.webp",
-          "images/C1PC4IM2_result.webp",
+          "images/C1PC38IM1_result.webp",
+          "images/C1PC38IM2_result.webp",
           "images/C1IM3_result.webp"
         ]
       },
       {
     id: "a3-5",
-    name: "RDR2",
-    collection: "Gaming",
+    name: "Spider-Man: Web-Slinger",
+    collection: "Marvel",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
     images: [
-        "images/C1PC5IM1_result.webp",
-        "images/C1PC5IM2_result.webp",
+        "images/C1PC35IM1_result.webp",
+        "images/C1PC35IM2_result.webp",
         "images/C1IM3_result.webp"
         ]
       },
 {
     id: "a3-6",
-    name: "BMW V8",
+    name: "BMW V8: Bavarian Power",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2476,7 +2477,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-7",
-    name: "GTA VI",
+    name: "Grand Theft Auto VI: Vice City Nights",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2485,16 +2486,16 @@ const CATEGORIES = [
 },
 {
     id: "a3-8",
-    name: "SPIRITED AWAY",
-    collection: "Anime",
+    name: "Spider-Man: Beyond the Web",
+    collection: "Marvel",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
-    images: ["images/C1PC8IM1_result.webp","images/C1PC8IM2_result.webp","images/C1IM3_result.webp"]
+    images: ["images/C1PC60IM1_result.webp","images/C1PC60IM2_result.webp","images/C1IM3_result.webp"]
 },
 {
     id: "a3-9",
-    name: "AMERICAN PSYCHO",
+    name: "American Psycho: Wall Street Shadows",
     collection: "Movie",
     rating: 5,
     reviews: 0,
@@ -2503,7 +2504,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-10",
-    name: "SUPRA",
+    name: "Toyota Supra: Turbo Legacy",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2512,7 +2513,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-11",
-    name: "JOHN WEEK 4",
+    name: "John Wick: Chapter Four",
     collection: "Movie",
     rating: 5,
     reviews: 0,
@@ -2521,16 +2522,16 @@ const CATEGORIES = [
 },
 {
     id: "a3-12",
-    name: "NINJA H2R",
-    collection: "Super-Bike",
+    name: "Joker: Descent into Madness",
+    collection: "DC, Movie",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
-    images: ["images/C1PC12IM1_result.webp","images/C1PC12IM2_result.webp","images/C1IM3_result.webp"]
+    images: ["images/C1PC36IM1_result.webp","images/C1PC36IM2_result.webp","images/C1IM3_result.webp"]
 },
 {
     id: "a3-13",
-    name: "TOTORO",
+    name: "My Neighbor Totoro: Forest Spirit",
     collection: "Anime",
     rating: 5,
     reviews: 0,
@@ -2539,7 +2540,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-14",
-    name: "GHOST COD",
+    name: "Call of Duty: Ghost Recon",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2548,7 +2549,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-15",
-    name: "PORSCHE 911",
+    name: "Porsche 911: Timeless Curves",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2557,8 +2558,8 @@ const CATEGORIES = [
 },
 {
     id: "a3-16",
-    name: "JOKER",
-    collection: "Movie",
+    name: "Joker: Last Laugh",
+    collection: "DC, Movie",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
@@ -2566,7 +2567,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-17",
-    name: "THE WOLF OF WALL STREET",
+    name: "The Wolf of Wall Street: Greed Unleashed",
     collection: "Webseries",
     rating: 5,
     reviews: 0,
@@ -2575,7 +2576,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-18",
-    name: "F1 MERCEDECE",
+    name: "Mercedes F1: Silver Arrow",
     collection: "F1",
     rating: 5,
     reviews: 0,
@@ -2584,7 +2585,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-19",
-    name: "THE WOLF OF WALL STREET 2",
+    name: "The Wolf of Wall Street: Excess & Ambition",
     collection: "Webseries",
     rating: 5,
     reviews: 0,
@@ -2593,7 +2594,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-20",
-    name: "1955 CHEVROLET BEL AIR",
+    name: "1955 Chevrolet Bel Air: Classic Cruiser",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2602,7 +2603,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-21",
-    name: "BMW M5",
+    name: "BMW M5: Autobahn Icon",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2611,7 +2612,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-22",
-    name: "DODGE CHARGER",
+    name: "Dodge Charger: Muscle Legacy",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2620,7 +2621,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-23",
-    name: "SUPRA MK4",
+    name: "Toyota Supra MK4: Street Icon",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2629,7 +2630,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-24",
-    name: "LOS ANGGELES 1",
+    name: "Los Angeles: City of Angels",
     collection: "City",
     rating: 5,
     reviews: 0,
@@ -2638,7 +2639,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-25",
-    name: "LOS ANGGELES 2",
+    name: "Los Angeles: Sunset Skyline",
     collection: "City",
     rating: 5,
     reviews: 0,
@@ -2647,7 +2648,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-26",
-    name: "LOS ANGGELES 3",
+    name: "Los Angeles: Downtown Lights",
     collection: "City",
     rating: 5,
     reviews: 0,
@@ -2656,7 +2657,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-27",
-    name: "JAPAN",
+    name: "Japan: Rising Horizon",
     collection: "City",
     rating: 5,
     reviews: 0,
@@ -2665,16 +2666,16 @@ const CATEGORIES = [
 },
 {
     id: "a3-28",
-    name: "MONEY HEIST",
-    collection: "Webseries",
+    name: "Iron Man: Mark Prime",
+    collection: "Marvel",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
-    images: ["images/C1PC28IM1_result.webp","images/C1PC28IM2_result.webp","images/C1IM3_result.webp"]
+    images: ["images/C1PC33IM1_result.webp","images/C1PC33IM2_result.webp","images/C1IM3_result.webp"]
 },
 {
     id: "a3-29",
-    name: "MONEY HEIST",
+    name: "Money Heist: The Professor's Plan",
     collection: "Webseries",
     rating: 5,
     reviews: 0,
@@ -2683,7 +2684,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-30",
-    name: "PORSCHE GT3 RS",
+    name: "Porsche GT3 RS: Track Bred",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2692,7 +2693,7 @@ const CATEGORIES = [
 },
 {
     id: "a3-31",
-    name: "F1 REDBULL",
+    name: "Red Bull Racing: Championship Form",
     collection: "F1",
     rating: 5,
     reviews: 0,
@@ -2701,12 +2702,264 @@ const CATEGORIES = [
 },
 {
     id: "a3-32",
-    name: "MAX VERSTAPPEN",
+    name: "Max Verstappen: Race Winner",
     collection: "F1",
     rating: 5,
     reviews: 0,
     stock: "In Stock",
     images: ["images/C1PC32IM1_result.webp","images/C1PC32IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-33",
+    name: "Money Heist: Resistance Rises",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC28IM1_result.webp","images/C1PC28IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-34",
+    name: "Iron Man: Armored Avenger",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC34IM1_result.webp","images/C1PC34IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-35",
+    name: "Red Dead Redemption 2: Outlaw's Trail",
+    collection: "Gaming",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC5IM1_result.webp","images/C1PC5IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-36",
+    name: "Kawasaki Ninja H2R: Supercharged Speed",
+    collection: "Sports-bike",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC12IM1_result.webp","images/C1PC12IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-37",
+    name: "Stranger Things: Upside Down",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC37IM1_result.webp","images/C1PC37IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-38",
+    name: "Your Name: Twilight Reunion",
+    collection: "Anime",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC4IM1_result.webp","images/C1PC4IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-39",
+    name: "Transformers: Rise of the Machines",
+    collection: "Movie, Robot",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC39IM1_result.webp","images/C1PC39IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-40",
+    name: "Iron Man: Suit Up",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC40IM1_result.webp","images/C1PC40IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-41",
+    name: "Neymar Jr: Brazilian Flair",
+    collection: "Sports",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC3IM1_result.webp","images/C1PC3IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-42",
+    name: "Iron Man: Genius Billionaire",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC42IM1_result.webp","images/C1PC42IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-43",
+    name: "Game of Thrones: The King in the North",
+    collection: "Webseries, GOT",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC2IM1_result.webp","images/C1PC2IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-44",
+    name: "Iron Man: Legacy Armor",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC44IM1_result.webp","images/C1PC44IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-45",
+    name: "Batman: Gotham Fog",
+    collection: "DC, Mobie",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC45IM1_result.webp","images/C1PC45IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-46",
+    name: "Deadpool & Wolverine: Merc Meets Mutant",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC46IM1_result.webp","images/C1PC46IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-47",
+    name: "Superman: Shadow of Krypton",
+    collection: "DC, Movie",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC47IM1_result.webp","images/C1PC47IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-48",
+    name: "Superman: Red & Blue Legacy",
+    collection: "DC, Movie",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC48IM1_result.webp","images/C1PC48IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-49",
+    name: "Spider-Man: Crimson Web",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC49IM1_result.webp","images/C1PC49IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-50",
+    name: "Deadpool & Wolverine: Chaos Duo",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC50IM1_result.webp","images/C1PC50IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-51",
+    name: "Deadpool & Wolverine: Multiverse Mayhem",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC51IM1_result.webp","images/C1PC51IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-52",
+    name: "Iron Man: Confident Stride",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC52IM1_result.webp","images/C1PC52IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-53",
+    name: "Deadpool & Wolverine: Unlikely Allies",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC53IM1_result.webp","images/C1PC53IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-54",
+    name: "Deadpool & Wolverine: Final Stand",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC54IM1_result.webp","images/C1PC54IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-55",
+    name: "Spider-Man: Pure White Suit",
+    collection: "New",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC55IM1_result.webp","images/C1PC55IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-56",
+    name: "Iron Man: Gold Titanium Suit",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC56IM1_result.webp","images/C1PC56IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-57",
+    name: "Spider-Man: City Skyline Swing",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC57IM1_result.webp","images/C1PC57IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-58",
+    name: "Spider-Man: Nightfall Web",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC58IM1_result.webp","images/C1PC58IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-59",
+    name: "Spider-Man: Shadow Symbiote",
+    collection: "Marvel",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC59IM1_result.webp","images/C1PC59IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-60",
+    name: "Spirited Away: Enchanted Bathhouse",
+    collection: "Anime",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC8IM1_result.webp","images/C1PC8IM2_result.webp","images/C1IM3_result.webp"]
 }
       /* Add more A3 Split designs here — copy the template at the
          top of this file, paste it above this line, and give it its
@@ -2720,7 +2973,7 @@ const CATEGORIES = [
     price: 137,
     designs: [
       {
-        id: "a43-1", name: "VINLAND SAGA", collection: "Anime",
+        id: "a43-1", name: "Vinland Saga: Warrior's Path", collection: "Anime",
         rating: 4.9, reviews: 0, stock: "In Stock",
         images: [
           "images/C2PC1IM1_result.webp",
@@ -2729,7 +2982,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a43-2", name: "MINECRAFT", collection: "Gaming",
+        id: "a43-2", name: "Minecraft: Blocky Adventure", collection: "Gaming",
         rating: 4.8, reviews: 0, stock: "In Stock",
         images: [
           "images/C2PC2IM1_result.webp",
@@ -2738,7 +2991,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a43-3", name: "CSGO 2", collection: "Gaming",
+        id: "a43-3", name: "Counter-Strike 2: Tactical Strike", collection: "Gaming",
         rating: 4.5, reviews: 0, stock: "In Stock",
         images: [
           "images/C2PC3IM1_result.webp",
@@ -2747,7 +3000,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a43-4", name: "WONDERS", collection: "Nature, City",
+        id: "a43-4", name: "Wonders of the World: Skyline Marvels", collection: "Nature, City",
         rating: 4.7, reviews: 0, stock: "In Stock",
         images: [
           "images/C2PC4IM1_result.webp",
@@ -2757,7 +3010,7 @@ const CATEGORIES = [
       },
 {
     id: "a43-5",
-    name: "MILITARY AIR",
+    name: "Military Aircraft: Sky Guardians",
     collection: "Aircraft",
     rating: 5,
     reviews: 0,
@@ -2766,7 +3019,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-6",
-    name: "WONDERS",
+    name: "Wonders of the World: Natural Splendor",
     collection: "Nature, City",
     rating: 5,
     reviews: 0,
@@ -2775,7 +3028,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-7",
-    name: "JAPAN SUMMER",
+    name: "Japan in Summer: Sakura Skies",
     collection: "Japan, summer",
     rating: 5,
     reviews: 0,
@@ -2784,7 +3037,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-8",
-    name: "MADARA",
+    name: "Naruto: Madara Uchiha's Rise",
     collection: "Anime",
     rating: 5,
     reviews: 0,
@@ -2793,7 +3046,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-9",
-    name: "POWERPUFF GIRLS",
+    name: "The Powerpuff Girls: Sugar, Spice & Everything Nice",
     collection: "Cartoon, Animation",
     rating: 5,
     reviews: 0,
@@ -2802,7 +3055,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-10",
-    name: "TRANSFOMERS",
+    name: "Transformers: Metal Titans",
     collection: "Movie, Robots",
     rating: 5,
     reviews: 0,
@@ -2811,7 +3064,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-11",
-    name: "DRAGON BALL GOKU",
+    name: "Dragon Ball: Goku's Power Surge",
     collection: "Anime",
     rating: 5,
     reviews: 0,
@@ -2820,7 +3073,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-12",
-    name: "VALORANT",
+    name: "Valorant: Agents of Duty",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2829,7 +3082,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-13",
-    name: "FAR CRY 5",
+    name: "Far Cry 5: Rebellion Rising",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2838,7 +3091,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-14",
-    name: "FAR CRY 5",
+    name: "Far Cry 5: Montana Uprising",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2847,7 +3100,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-15",
-    name: "FAR CRY GAMES",
+    name: "Far Cry: Wild Frontier",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2856,7 +3109,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-16",
-    name: "ZUBEEN GARG",
+    name: "Zubeen Garg: Timeless Voice — White Edition",
     collection: "Artist, White theme",
     rating: 5,
     reviews: 0,
@@ -2865,7 +3118,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-17",
-    name: "ZUBEEN GARG",
+    name: "Zubeen Garg: Timeless Voice — Gold Edition",
     collection: "Artist, Gold theme",
     rating: 5,
     reviews: 0,
@@ -2874,7 +3127,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-18",
-    name: "ZUBEEN GARG",
+    name: "Zubeen Garg: Timeless Voice — Dark Edition",
     collection: "Artist, Dark theme",
     rating: 5,
     reviews: 0,
@@ -2883,7 +3136,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-19",
-    name: "ASSAM HERITAGE",
+    name: "Assam Heritage: Roots & Rivers",
     collection: "Nature, Culture",
     rating: 5,
     reviews: 0,
@@ -2892,7 +3145,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-20",
-    name: "MONEY MOTO",
+    name: "Money Mindset: Fuel Your Hustle",
     collection: "Quoate, Motivation",
     rating: 5,
     reviews: 0,
@@ -2901,7 +3154,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-21",
-    name: "KING HELL",
+    name: "King Hell: Reign of Chaos",
     collection: "Anime",
     rating: 5,
     reviews: 0,
@@ -2910,7 +3163,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-22",
-    name: "JOHN SNOW",
+    name: "Jon Snow: Words of Resolve",
     collection: "Quoate, Motivation",
     rating: 5,
     reviews: 0,
@@ -2919,7 +3172,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-23",
-    name: "MONEY MOTO",
+    name: "Money Mindset: Hustle Never Sleeps",
     collection: "Quoate, Motivation",
     rating: 5,
     reviews: 0,
@@ -2928,7 +3181,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-24",
-    name: "SWAGE CATS",
+    name: "Swagger Cats: Meme Royalty",
     collection: "Funny, Meme",
     rating: 5,
     reviews: 0,
@@ -2937,7 +3190,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-25",
-    name: "WEDNESDAY",
+    name: "Wednesday Addams: Dark Academia",
     collection: "Webseries",
     rating: 5,
     reviews: 0,
@@ -2946,7 +3199,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-26",
-    name: "CR 07",
+    name: "Cristiano Ronaldo: CR7 Legacy",
     collection: "Sports",
     rating: 5,
     reviews: 0,
@@ -2955,7 +3208,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-27",
-    name: "SPIDERMAN COMIC",
+    name: "Spider-Man: Classic Comic Panel",
     collection: "Marvel, comic",
     rating: 5,
     reviews: 0,
@@ -2964,7 +3217,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-28",
-    name: "GTA V TRIO",
+    name: "Grand Theft Auto V: The Trio",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -2973,7 +3226,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-29",
-    name: "SUPER CARS",
+    name: "Supercars: Speed Collection",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2982,7 +3235,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-30",
-    name: "SUPER CARS NEON",
+    name: "Supercars: Neon Nights",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -2991,7 +3244,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-31",
-    name: "GOD OF WAR",
+    name: "God of War: Kratos's Wrath",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -3000,7 +3253,7 @@ const CATEGORIES = [
 },
 {
     id: "a43-32",
-    name: "F1 TRACKS",
+    name: "Formula 1: Iconic Circuits",
     collection: "F1",
     rating: 5,
     reviews: 0,
@@ -3022,7 +3275,7 @@ const CATEGORIES = [
     ],
     designs: [
       {
-        id: "a46-1", name: "NFS SERIES", collection: "Car, Gaming",
+        id: "a46-1", name: "Need for Speed: Underground Rush", collection: "Car, Gaming",
         rating: 4.8, reviews: 0, stock: "In Stock",
         images: [
           "images/C3PC1IM1_result.webp",
@@ -3031,7 +3284,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a46-2", name: "SQUID GAME", collection: "Webseries",
+        id: "a46-2", name: "Squid Game: Red Light, Green Light", collection: "Webseries",
         rating: 4.9, reviews: 0, stock: "In Stock",
         images: [
           "images/C3PC2IM1_result.webp",
@@ -3040,7 +3293,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a46-3", name: "AVENGERS", collection: "Marvel",
+        id: "a46-3", name: "The Avengers: Earth's Mightiest Heroes", collection: "Marvel",
         rating: 4.7, reviews: 0, stock: "Low Stock",
         images: [
           "images/C3PC3IM1_result.webp",
@@ -3049,7 +3302,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a46-4", name: "HOPPERS", collection: "Animation, Movie",
+        id: "a46-4", name: "Hoppers: Leap of Wonder", collection: "Animation, Movie",
         rating: 4.6, reviews: 0, stock: "In Stock",
         images: [
           "images/C3PC4IM1_result.webp",
@@ -3059,7 +3312,7 @@ const CATEGORIES = [
       },
 {
     id: "a46-5",
-    name: "MEDEAVEL HOUR",
+    name: "Medieval Hour: Warrior's Discipline",
     collection: "Motivation, Quoate",
     rating: 5,
     reviews: 0,
@@ -3068,7 +3321,7 @@ const CATEGORIES = [
 },
 {
     id: "a46-6",
-    name: "CAR ARTS",
+    name: "Automotive Art: Line & Chrome",
     collection: "Car, Art",
     rating: 5,
     reviews: 0,
@@ -3077,7 +3330,7 @@ const CATEGORIES = [
 },
 {
     id: "a46-7",
-    name: "SUPER CARS",
+    name: "Supercars: Garage Icons",
     collection: "Car",
     rating: 5,
     reviews: 0,
@@ -3086,7 +3339,7 @@ const CATEGORIES = [
 },
 {
     id: "a46-8",
-    name: "GOD OF WAR",
+    name: "God of War: Norse Saga",
     collection: "Gaming",
     rating: 5,
     reviews: 0,
@@ -3095,7 +3348,7 @@ const CATEGORIES = [
 },
 {
     id: "a46-9",
-    name: "MUSICAL MELODY",
+    name: "Musical Melody: Studio Soundwaves",
     collection: "Muisc, Artist",
     rating: 5,
     reviews: 0,
@@ -3116,7 +3369,7 @@ const CATEGORIES = [
     ],
     designs: [
       {
-        id: "a411-1", name: "SPOTIFY SONGS", collection: "Art, Music",
+        id: "a411-1", name: "Spotify Wrapped: My Sound, My Story", collection: "Art, Music",
         rating: 4.8, reviews: 0, stock: "In Stock",
         images: [
           "images/C4PC1IM1_result.webp",
@@ -3125,7 +3378,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a411-2", name: "PINK DAIRY", collection: "Asthetic, Decor",
+        id: "a411-2", name: "Pink Diary: Soft Aesthetic Journal", collection: "Asthetic, Decor",
         rating: 4.9, reviews: 0, stock: "In Stock",
         images: [
           "images/C4PC2IM1_result.webp",
@@ -3134,7 +3387,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a411-3", name: "ANGRY BIRDS", collection: "Cartoon, Animation",
+        id: "a411-3", name: "Angry Birds: Sling & Strike", collection: "Cartoon, Animation",
         rating: 4.6, reviews: 0, stock: "In Stock",
         images: [
           "images/C4PC3IM1_result.webp",
@@ -3143,7 +3396,7 @@ const CATEGORIES = [
         ]
       },
       {
-        id: "a411-4", name: "YOURNAME", collection: "Anime",
+        id: "a411-4", name: "Your Name: Comet Across the Sky", collection: "Anime",
         rating: 4.7, reviews: 0, stock: "Low Stock",
         images: [
           "images/C4PC4IM1_result.webp",
@@ -3153,7 +3406,7 @@ const CATEGORIES = [
       },
 {
     id: "a411-5",
-    name: "PURPLE HEART",
+    name: "Purple Heart: Dreamy Hues",
     collection: "Asthetic, Decor",
     rating: 5,
     reviews: 0,
@@ -3162,7 +3415,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-6",
-    name: "PINK SKY",
+    name: "Pink Sky: Cotton Candy Dusk",
     collection: "Asthetic, Decor",
     rating: 5,
     reviews: 0,
@@ -3171,7 +3424,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-7",
-    name: "GOLDEN HOUR",
+    name: "Golden Hour: Warm Glow",
     collection: "Asthetic,Decor",
     rating: 5,
     reviews: 0,
@@ -3180,7 +3433,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-8",
-    name: "AUTOMOTIVE I",
+    name: "Automotive Icons: Classic Lines",
     collection: "Cars",
     rating: 5,
     reviews: 0,
@@ -3189,7 +3442,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-9",
-    name: "DREAMY UNIVERSE",
+    name: "Dreamy Universe: Among the Stars",
     collection: "Asthetic, Space",
     rating: 5,
     reviews: 0,
@@ -3198,7 +3451,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-10",
-    name: "AUTOMOTIVE II",
+    name: "Automotive Icons: Modern Muscle",
     collection: "Cars",
     rating: 5,
     reviews: 0,
@@ -3207,7 +3460,7 @@ const CATEGORIES = [
 },
 {
     id: "a411-11",
-    name: "AUTOMOTIVE III",
+    name: "Automotive Icons: Track Ready",
     collection: "Cars",
     rating: 5,
     reviews: 0,
@@ -3226,82 +3479,82 @@ const CATEGORIES = [
     price: 317,
     designs: [
       {
-        id: "a48-1", name: "WEEKND", collection: "Artist",
+        id: "a48-1", name: "The Weeknd: After Hours Glow", collection: "Artist",
         rating: 4.5, reviews: 0, stock: "In Stock",
         images: ["images/C5PC1IM1_result.webp","images/C5PC1IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-2", name: "CHAINSAW MAN", collection: "Anime",
+        id: "a48-2", name: "Chainsaw Man: Devil Hunter", collection: "Anime",
         rating: 5.0, reviews: 4, stock: "In Stock",
         images: ["images/C5PC2IM1_result.webp","images/C5PC2IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-3", name: "YOUR NAME", collection: "Anime",
+        id: "a48-3", name: "Your Name: Fated Threads", collection: "Anime",
         rating: 4.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC3IM1_result.webp","images/C5PC3IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-4", name: "DEATH NOTE", collection: "Anime",
+        id: "a48-4", name: "Death Note: Rules of Fate", collection: "Anime",
         rating: 3.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC4IM1_result.webp","images/C5PC4IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-5", name: "LUFFY ONE PEICE", collection: "Anime",
+        id: "a48-5", name: "One Piece: Luffy's Adventure", collection: "Anime",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC5IM1_result.webp","images/C5PC5IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-6", name: "DEFENDER", collection: "Car",
+        id: "a48-6", name: "Land Rover Defender: Built to Explore", collection: "Car",
         rating: 4.5, reviews: 0, stock: "In Stock",
         images: ["images/C5PC6IM1_result.webp","images/C5PC6IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-7", name: "TAYLOR SWIFT", collection: "Artist",
+        id: "a48-7", name: "Taylor Swift: Eras Spotlight", collection: "Artist",
         rating: 4.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC7IM1_result.webp","images/C5PC7IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-8", name: "VALORENT", collection: "Gaming",
+        id: "a48-8", name: "Valorant: Precision Strike", collection: "Gaming",
         rating: 3.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC8IM1_result.webp","images/C5PC8IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-9", name: "CYBERPUNK 2077", collection: "Gaming",
+        id: "a48-9", name: "Cyberpunk 2077: Night City Neon", collection: "Gaming",
         rating: 4.5, reviews: 0, stock: "In Stock",
         images: ["images/C5PC9IM1_result.webp","images/C5PC9IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-10", name: "GHOST OF TSUSHIMA", collection: "Gaming",
+        id: "a48-10", name: "Ghost of Tsushima: Samurai's Path", collection: "Gaming",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC10IM1_result.webp","images/C5PC10IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-11", name: "GTA V", collection: "Gaming",
+        id: "a48-11", name: "Grand Theft Auto V: Los Santos Nights", collection: "Gaming",
         rating: 4.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC11IM1_result.webp","images/C5PC11IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-12", name: "PRIRATS OF THE CARIBEAN", collection: "Movie",
+        id: "a48-12", name: "Pirates of the Caribbean: Cursed Seas", collection: "Movie",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC12IM1_result.webp","images/C5PC12IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-13", name: "PRIRATE SHIP", collection: "Nature",
+        id: "a48-13", name: "Pirate Ship: Voyage at Dusk", collection: "Nature",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC13IM1_result.webp","images/C5PC13IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-14", name: "NARUTO IN PURPLE", collection: "Anime",
+        id: "a48-14", name: "Naruto: Purple Twilight", collection: "Anime",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC14IM1_result.webp","images/C5PC14IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-15", name: "RDR2", collection: "Gaming Nature",
+        id: "a48-15", name: "Red Dead Redemption 2: Frontier Sunset", collection: "Gaming Nature",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC15IM1_result.webp","images/C5PC15IM2_result.webp","images/C5IM3_result.webp"]
       },
       {
-        id: "a48-16", name: "ASSASSIN'S CREED", collection: "Gaming",
+        id: "a48-16", name: "Assassin's Creed: Hidden Blade", collection: "Gaming",
         rating: 5.0, reviews: 0, stock: "In Stock",
         images: ["images/C5PC16IM1_result.webp","images/C5PC16IM2_result.webp","images/C5IM3_result.webp"]
       }
@@ -3315,7 +3568,7 @@ const CATEGORIES = [
     designs: [
       {
         id: "a4s3-1",
-        name: "THEY CALL LOVE",
+        name: "Marvel Romance: They Call It Love",
         collection: "Movie, Marvel",
         rating: 4.9,
         reviews: 0,
@@ -3328,7 +3581,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-2",
-        name: "GOD OF MISCHEIF",
+        name: "Loki: God of Mischief",
         collection: "Marvel",
         rating: 4.8,
         reviews: 6,
@@ -3341,7 +3594,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-3",
-        name: "SPIDER-GWEN",
+        name: "Spider-Gwen: Web of Her Own",
         collection: "Marvel",
         rating: 4.1,
         reviews: 0,
@@ -3354,7 +3607,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-4",
-        name: "THE PENGUIN",
+        name: "The Penguin: Gotham's Underworld",
         collection: "TV Show",
         rating: 3.9,
         reviews: 0,
@@ -3367,7 +3620,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-5",
-        name: "MILES MORALES",
+        name: "Miles Morales: Spider-Verse Rising",
         collection: "Marvel",
         rating: 4.5,
         reviews: 0,
@@ -3380,7 +3633,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-6",
-        name: "I AM IRONMAN",
+        name: "Iron Man: I Am Iron Man",
         collection: "Marvel",
         rating: 4.9,
         reviews: 0,
@@ -3393,7 +3646,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-7",
-        name: "DEALPOOL",
+        name: "Deadpool: Merc with a Mouth",
         collection: "Marvel",
         rating: 4.0,
         reviews: 0,
@@ -3406,20 +3659,20 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-8",
-        name: "LA LA LAND",
-        collection: "Movie",
+        name: "Thor: God of Thunder",
+        collection: "Marvel,Movie",
         rating: 3.5,
         reviews: 0,
         stock: "In Stock",
         images: [
-          "images/C6PC8IM1_result.webp",
-          "images/C6PC8IM2_result.webp",
+          "images/C6PC26IM1_result.webp",
+          "images/C6PC26IM2_result.webp",
           "images/C6IM3_result.webp"
         ]
       },
       {
         id: "a4s3-9",
-        name: "PORSCHE GT3 RS",
+        name: "Porsche GT3 RS: Circuit Bred",
         collection: "Car",
         rating: 3.5,
         reviews: 0,
@@ -3432,7 +3685,7 @@ const CATEGORIES = [
       },
       {
         id: "a4s3-10",
-        name: "BLUE SNEAKER",
+        name: "Blue Sneaker: Street Style Icon",
         collection: "Nykee, Sneaker",
         rating: 4.5,
         reviews: 0,
@@ -3440,6 +3693,331 @@ const CATEGORIES = [
         images: [
           "images/C6PC10IM1_result.webp",
           "images/C6PC10IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-11",
+        name: "Batman: Dark Knight Rising",
+        collection: "DC, Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC11IM1_result.webp",
+          "images/C6PC11IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-12",
+        name: "Iron Man: Arc Reactor Glow",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC12IM1_result.webp",
+          "images/C6PC12IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-13",
+        name: "Spider-Man: Friendly Neighborhood Hero",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC13IM1_result.webp",
+          "images/C6PC13IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-14",
+        name: "Joker: Agent of Chaos",
+        collection: "DC, Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC14IM1_result.webp",
+          "images/C6PC14IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-15",
+        name: "Superman: Man of Steel",
+        collection: "DC, Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC15IM1_result.webp",
+          "images/C6PC15IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-16",
+        name: "Iron Man: Mark 85 Unleashed",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC16IM1_result.webp",
+          "images/C6PC16IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-17",
+        name: "Iron Man: Genius at War",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC17IM1_result.webp",
+          "images/C6PC17IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-18",
+        name: "Superman: Last Son of Krypton",
+        collection: "DC,Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC18IM1_result.webp",
+          "images/C6PC18IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-19",
+        name: "Batman: Cape & Cowl",
+        collection: "DC,Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC19IM1_result.webp",
+          "images/C6PC19IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-20",
+        name: "Superman: Metropolis Guardian",
+        collection: "DC,Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC20IM1_result.webp",
+          "images/C6PC20IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-21",
+        name: "Doctor Doom: Sovereign of Latveria",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC21IM1_result.webp",
+          "images/C6PC21IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-22",
+        name: "Thor: Ragnarok Fury",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC22IM1_result.webp",
+          "images/C6PC22IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-23",
+        name: "Thor: Storm Bringer",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC23IM1_result.webp",
+          "images/C6PC23IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-24",
+        name: "Iron Man: Endgame Armor",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC24IM1_result.webp",
+          "images/C6PC24IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-25",
+        name: "Transformers: Autobots Assemble",
+        collection: "Movie,Robot",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC25IM1_result.webp",
+          "images/C6PC25IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-26",
+        name: "La La Land: City of Stars",
+        collection: "Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC8IM1_result.webp",
+          "images/C6PC8IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-27",
+        name: "Doctor Doom: Iron Mask",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC27IM1_result.webp",
+          "images/C6PC27IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-28",
+        name: "Thor: Asgard's Champion",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC28IM1_result.webp",
+          "images/C6PC28IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-29",
+        name: "Thor: Love and Lightning",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC29IM1_result.webp",
+          "images/C6PC29IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-30",
+        name: "Superman: Skybound Hope",
+        collection: "DC,Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC30IM1_result.webp",
+          "images/C6PC30IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-31",
+        name: "Iron Man: Suit Schematics Art",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC31IM1_result.webp",
+          "images/C6PC31IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-32",
+        name: "Deadpool & Wolverine: Buddy Chaos",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC32IM1_result.webp",
+          "images/C6PC32IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-33",
+        name: "Spider-Man: Classic Red & Blue",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC33IM1_result.webp",
+          "images/C6PC33IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-34",
+        name: "Iron Man: Blueprint Legacy",
+        collection: "Marvel",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC34IM1_result.webp",
+          "images/C6PC34IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-35",
+        name: "Batman: Crimson Bat-Signal",
+        collection: "DC,Movie",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC35IM1_result.webp",
+          "images/C6PC35IM2_result.webp",
           "images/C6IM3_result.webp"
         ]
       }
@@ -3607,6 +4185,7 @@ const COLLECTION_BOXES = [
   { name: "Anime",      image: "images/collection1_result.webp"  },
   { name: "Cars",       image: "images/collection2_result.webp"  },
   { name: "Gaming",     image: "images/collection3_result.webp"  },
+  { name: "DC",         image: "images/collection13_result.webp" },
   { name: "Marvel",     image: "images/collection4_result.webp"  },
   { name: "Webseries",  image: "images/collection5_result.webp"  },
   { name: "Movies",     image: "images/collection6_result.webp"  },
