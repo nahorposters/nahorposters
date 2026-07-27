@@ -779,7 +779,7 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
    never causes a visible "pop". Grid cards are small, so the low-res
    stage is barely perceptible even unblurred. Quick View's own
    .pc-slide images are untouched by this (see .pc-slide img above). */
-img.pc-lqip{ filter: blur(7px); transition: filter .45s ease; background: var(--black-3); }
+img.pc-lqip{ filter: blur(2px); transition: filter .22s ease-out; background: var(--black-3); }
 img.pc-lqip.pc-hi{ filter: blur(0); }
 
 .pc-arrow{
@@ -5284,7 +5284,7 @@ function resolveCollectionItems(collectionName){
     // (kept for Quick View only) so the grid stays light and smooth.
 
     const imageHTML = useLOD
-      ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${cardSrc(design.images[0])}" alt="${design.name}" loading="eager" fetchpriority="low" decoding="async">`
+      ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${cardSrc(design.images[0])}" alt="${design.name}" loading="eager" fetchpriority="high" decoding="async">`
       : `<img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`;
 
     return `
@@ -5472,7 +5472,7 @@ function resolveCollectionItems(collectionName){
     if (!wrap) return;
     wrap.innerHTML = COLLECTION_BOXES.map(c => `
       <button type="button" class="collection-box" data-collection="${c.name}" aria-label="Shop the ${c.name} collection">
-        <img class="pc-lqip" src="${lqipSrc(c.image)}" data-full="${cardSrc(c.image)}" alt="" loading="eager" fetchpriority="low" decoding="async">
+        <img class="pc-lqip" src="${lqipSrc(c.image)}" data-full="${cardSrc(c.image)}" alt="" loading="eager" fetchpriority="high" decoding="async">
       </button>
     `).join("");
     wrap.querySelectorAll(".collection-box").forEach(box => {
@@ -5599,7 +5599,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-image"><img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${cardSrc(design.images[0])}" alt="${design.name}" loading="eager" fetchpriority="low" decoding="async"></div>
+        <div class="pc-image"><img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${cardSrc(design.images[0])}" alt="${design.name}" loading="eager" fetchpriority="high" decoding="async"></div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -7135,7 +7135,7 @@ function resolveCollectionItems(collectionName){
 
     grid.innerHTML = category.designs.map(d => `
       <button type="button" class="dyo-tile" data-id="${d.id}" aria-label="${d.name} — open Quick View">
-        <img class="dyo-tile-img pc-lqip" src="${lqipSrc(d.images[0])}" data-full="${cardSrc(d.images[0])}" alt="${d.name}" loading="eager" fetchpriority="low" decoding="async">
+        <img class="dyo-tile-img pc-lqip" src="${lqipSrc(d.images[0])}" data-full="${cardSrc(d.images[0])}" alt="${d.name}" loading="eager" fetchpriority="high" decoding="async">
         <span class="dyo-tile-overlay"></span>
         <span class="dyo-tile-eyebrow">Custom</span>
         <span class="dyo-tile-title">${d.tileLabel || d.name}</span>
