@@ -1230,10 +1230,8 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
 /* ============ OVERLAYS (search / drawers / modals) ============ */
 .overlay-scrim, .modal-scrim{
   position: fixed; inset:0; z-index: 600;
-  background: rgba(248,245,239,.45);
-  backdrop-filter: blur(8px);
+  background: rgba(30,28,25,.35);
   opacity:0; pointer-events:none;
-  transition: opacity .4s var(--ease-soft);
 }
 .overlay-scrim.open, .modal-scrim.open{ opacity:1; pointer-events:auto; }
 
@@ -1346,16 +1344,14 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
 /* Modals */
 .account-modal{
   position: fixed; top:50%; left:50%; z-index: 800;
-  background: rgba(255,255,255,.98);
-  backdrop-filter: blur(20px);
+  background: #FFFFFF;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  transform: translate(-50%,-50%) scale(0.92);
+  transform: translate(-50%,-50%);
   opacity:0; pointer-events:none;
-  transition: opacity .4s var(--ease-lux), transform .4s var(--ease-lux);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.25);
 }
-.account-modal.open{ opacity:1; pointer-events:auto; transform: translate(-50%,-50%) scale(1); }
+.account-modal.open{ opacity:1; pointer-events:auto; }
 
 .account-modal{ width: min(400px, 90vw); padding: 40px; }
 .account-modal .panel-close{ position:absolute; top:18px; right:18px; }
@@ -1382,7 +1378,6 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
   overflow-y:auto; -webkit-overflow-scrolling:touch;
   padding:0;
   display:flex; flex-direction:column;
-  transition: opacity .32s var(--ease-lux), visibility .32s;
 }
 .quickview-modal.open{ opacity:1; visibility:visible; pointer-events:auto; }
 
@@ -1401,8 +1396,7 @@ section[id]{ scroll-margin-top: calc(var(--header-h) + 10px); }
   position: sticky; top:0; z-index: 30;
   display:flex; align-items:center; justify-content:space-between; gap:14px;
   padding: 18px 6vw;
-  background: rgba(251,248,242,.92);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: #FBF8F2;
   border-bottom: 1px solid var(--glass-border);
 }
 .qv-back{
@@ -2456,10 +2450,10 @@ const CATEGORIES = [
          single shared image like the other categories use — because
          each product here can be a different format/poster count. */
     id: "room-transformer",
-    name: "Room Transformer Collection",
-    sub: "One collection - Splits,A A4 & A3 posters",
+    name: "Room Collections",
+    sub: "One collection-Splits,A A4 & A3 posters",
     price: 299,
-    priceNote: "Starts from ₹299 only",
+    priceNote: "Starts ₹299/-",
     designs: [
       {
         id: "rt-1",
@@ -2508,7 +2502,7 @@ const CATEGORIES = [
   {
     id: "a3-split",
     name: "A3 Split Posters",
-    sub: "Set of 3 sheets — combine on your wall into one large piece",
+    sub: "Set of 3 sheets combine into one",
     price: 227,
     designs: [
       {
@@ -4482,6 +4476,18 @@ function resolveCollectionItems(collectionName){
 (function(){
   "use strict";
 
+  /* Without this, the browser restores its own remembered scroll
+     position the instant you hit Back/Forward — before our popstate
+     handler runs and before the modal has re-opened. That native
+     jump briefly reveals whatever is underneath (the homepage, an
+     older product, etc.), which is the "previous tabs flick" glitch.
+     Taking scroll restoration over ourselves stops that automatic
+     jump so the only scroll changes are the ones we drive deliberately
+     inside openModal/unlockBodyScroll. */
+  if ("scrollRestoration" in history){
+    history.scrollRestoration = "manual";
+  }
+
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const isTouch = window.matchMedia("(hover: none)").matches;
 
@@ -5767,7 +5773,21 @@ function resolveCollectionItems(collectionName){
     const el = document.getElementById(id);
     if (el) el.classList.remove("open");
     const stillOpen = document.querySelector(".account-modal.open, .quickview-modal.open");
-    if (!stillOpen) unlockBodyScroll();
+    if (!stillOpen) scheduleUnlock(el);
+  }
+  /* Restoring the scroll position instantly (mid-fade) made whatever
+     was underneath jump/reflow while still visible through the
+     translucent modal — that instant snap is what read as a "flick"
+     on back navigation. Waiting for the modal's own opacity
+     transition to finish first means the page is fully hidden before
+     anything underneath moves, so the back/close feels like one
+     smooth motion instead of two. Falls back to an immediate unlock
+     if the modal has no fade (e.g. reduced-motion) or the
+     transitionend event never fires for some reason. */
+  function scheduleUnlock(){
+    // Modals no longer fade in/out, so there's nothing to wait on —
+    // restore scroll immediately for a plain, instant close.
+    unlockBodyScroll();
   }
   function unlockBodyScroll(){
     document.getElementById("modalScrim").classList.remove("open");
@@ -5777,11 +5797,13 @@ function resolveCollectionItems(collectionName){
     window.scrollTo(0, scrollY);
   }
   function closeModals(){
+    const openModals = document.querySelectorAll(".account-modal.open, .quickview-modal.open");
+    const lastOne = openModals[openModals.length - 1] || null;
 
     document.querySelectorAll(".account-modal, .quickview-modal")
         .forEach(m => m.classList.remove("open"));
 
-    unlockBodyScroll();
+    scheduleUnlock(lastOne);
 }
   function initOverlays(){
     document.getElementById("cartToggle").addEventListener("click", () => openDrawer("cartDrawer"));
