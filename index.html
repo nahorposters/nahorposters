@@ -772,6 +772,16 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 }
 .product-card:hover .pc-image img{ transform: scale(1.05); }
 
+/* Homepage LOD image trick: a tiny/low-quality version paints first
+   (near-instant), then the true image is preloaded in the background
+   and swapped in silently. The blur hides the low-res pixels while it
+   loads and eases out once the full image is ready — the swap itself
+   never causes a visible "pop". Grid cards are small, so the low-res
+   stage is barely perceptible even unblurred. Quick View's own
+   .pc-slide images are untouched by this (see .pc-slide img above). */
+.pc-image img.pc-lqip{ filter: blur(7px); transition: filter .45s ease; }
+.pc-image img.pc-lqip.pc-hi{ filter: blur(0); }
+
 .pc-arrow{
   position:absolute; top:50%; z-index:3; transform: translateY(-50%);
   width:32px; height:32px; border-radius:50%;
@@ -5143,17 +5153,83 @@ function resolveCollectionItems(collectionName){
   }
 
   /* ============================================================
+     HOMEPAGE IMAGE LOD (level-of-detail) TRICK
+     Grid cards initially load a tiny/low-quality copy of the poster
+     (from images/lqip/, generated once by tools/generate-lqip — see
+     that script for details) so the card paints almost instantly.
+     Once that placeholder is on screen, the real full-res image is
+     quietly preloaded in memory; the moment it's ready we swap the
+     <img>'s src and fade the blur out — no flash, no layout shift,
+     nothing for the user to notice, just like a game streaming in a
+     higher LOD mesh once it's close enough to matter. If the low-res
+     file isn't there yet (script not run), it falls back to loading
+     the full image directly, so nothing ever breaks.
+     This ONLY touches homepage/grid cards (.pc-image). Quick View's
+     .pc-slide gallery images are untouched and always load full-res.
+     ============================================================ */
+  function lqipSrc(fullSrc){
+    return fullSrc.replace(/^images\//, "images/lqip/");
+  }
+
+  function upgradeCardImage(imgEl){
+    if (!imgEl || imgEl.dataset.upgraded) return;
+    imgEl.dataset.upgraded = "1";
+    const full = imgEl.dataset.full;
+    if (!full){ imgEl.classList.add("pc-hi"); return; }
+    const hi = new Image();
+    hi.decoding = "async";
+    hi.onload = () => {
+      imgEl.src = full;
+      requestAnimationFrame(() => imgEl.classList.add("pc-hi"));
+    };
+    // Full-res failed too (bad path, offline, etc.) — clear the blur
+    // anyway so the card never gets stuck looking blurred.
+    hi.onerror = () => imgEl.classList.add("pc-hi");
+    hi.src = full;
+    // Safety net: whatever happens, never let a card stay blurred for
+    // more than a moment — if neither onload nor onerror ever fires,
+    // force the blur off.
+    setTimeout(() => imgEl.classList.add("pc-hi"), 2500);
+  }
+
+  /* Call once per rendered card's <img class="pc-lqip">. Kicks off the
+     hi-res preload as soon as the low-res placeholder has painted (or
+     immediately, if it's already cached/painted by the time we wire
+     it up), and gracefully falls back to the full image if the low-res
+     file 404s. */
+  function wireCardImageLOD(imgEl){
+    if (!imgEl || imgEl.dataset.lodWired) return;
+    imgEl.dataset.lodWired = "1";
+    const kickUpgrade = () => upgradeCardImage(imgEl);
+    if (imgEl.complete && imgEl.naturalWidth > 0) kickUpgrade();
+    else imgEl.addEventListener("load", kickUpgrade, { once: true });
+    imgEl.addEventListener("error", function onLqipError(){
+      if (imgEl.dataset.upgraded) return; // already past the placeholder stage
+      imgEl.dataset.upgraded = "1";
+      const full = imgEl.dataset.full;
+      if (full) imgEl.src = full;
+      // The lqip file itself was missing/broken — we're already showing
+      // full-res here, so there's nothing left to blur. Clear it.
+      imgEl.classList.add("pc-hi");
+    }, { once: true });
+  }
+
+  /* ============================================================
      PRODUCT CARD RENDERING
      Each card belongs to exactly one category (its price comes from
      that category — A3 Split Posters, A4x3, A4x6, A4x11 are separate
      product catalogs, not variants of one card).
      ============================================================ */
-  function productCardHTML(design, category){
+  function productCardHTML(design, category, useLOD = true){
     const stockClass = design.stock === "Low Stock" ? " low" : "";
     const inWishlist = state.wishlist.some(w => w.id === design.id);
 
     // Homepage/grid cards show only the 1st image — no swipe gallery here
     // (kept for Quick View only) so the grid stays light and smooth.
+
+    const imageHTML = useLOD
+      ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`
+      : `<img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`;
 
     return `
     <div class="product-card" data-id="${design.id}" data-category="${category.id}">
@@ -5163,7 +5239,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-image"><img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
+        <div class="pc-image">${imageHTML}</div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -5189,6 +5265,9 @@ function resolveCollectionItems(collectionName){
   function wireProductCard(card, design, category){
     if (card.dataset.wired) return;
     card.dataset.wired = "1";
+
+    const lqipImg = card.querySelector(".pc-image img.pc-lqip");
+    if (lqipImg) wireCardImageLOD(lqipImg);
 
     // Homepage/grid cards are single-image now (no swipe gallery), so
     // this only wires the explicit action buttons plus the click-to-open
@@ -5463,7 +5542,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-image"><img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
+        <div class="pc-image"><img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -6426,7 +6505,9 @@ function resolveCollectionItems(collectionName){
   }
 
   function relatedCardsHTML(list){
-    return list.map(({design, category}) => productCardHTML(design, category)).join("");
+    // useLOD = false: this rail lives inside Quick View (the product
+    // view), which is out of scope for the homepage low-res-first trick.
+    return list.map(({design, category}) => productCardHTML(design, category, false)).join("");
   }
 
   /* ============================================================
