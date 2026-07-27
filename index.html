@@ -4933,9 +4933,32 @@ function resolveCollectionItems(collectionName){
     window.addEventListener("resize", syncHeaderHeights);
     window.addEventListener("load", syncHeaderHeights);
 
+    // Fast mobile flings fire dozens of "scroll" events per second.
+    // The old handler read nav.offsetHeight on every single one of
+    // them, which forces the browser to stop and recompute layout
+    // synchronously — dozens of times a second, on the same main
+    // thread that's supposed to be painting card images/text during
+    // the fling. That's what caused cards/images/text to appear to
+    // "not load" while scrolling fast. Fixed two ways: (1) the actual
+    // work only ever runs once per animation frame, no matter how
+    // many scroll events fire in between, and (2) the expensive
+    // offsetHeight read only happens when the scrolled state actually
+    // flips, not on every frame.
+    let navScrollQueued = false;
+    let navIsScrolled = window.scrollY > 40;
+    nav.classList.toggle("scrolled", navIsScrolled);
     window.addEventListener("scroll", () => {
-      nav.classList.toggle("scrolled", window.scrollY > 40);
-      syncHeaderHeights();
+      if (navScrollQueued) return;
+      navScrollQueued = true;
+      requestAnimationFrame(() => {
+        navScrollQueued = false;
+        const isScrolled = window.scrollY > 40;
+        if (isScrolled !== navIsScrolled){
+          navIsScrolled = isScrolled;
+          nav.classList.toggle("scrolled", isScrolled);
+          syncHeaderHeights();
+        }
+      });
     }, { passive: true });
 
     const burger = document.getElementById("navBurger");
