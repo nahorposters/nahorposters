@@ -772,15 +772,19 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 }
 .product-card:hover .pc-image img{ transform: scale(1.05); }
 
-/* Homepage LOD image trick: a tiny/low-quality version paints first
-   (near-instant), then the true image is preloaded in the background
-   and swapped in silently. The blur hides the low-res pixels while it
-   loads and eases out once the full image is ready — the swap itself
-   never causes a visible "pop". Grid cards are small, so the low-res
-   stage is barely perceptible even unblurred. Quick View's own
-   .pc-slide images are untouched by this (see .pc-slide img above). */
-img.pc-lqip{ filter: blur(2px); transition: filter .22s ease-out; background: var(--black-3); }
-img.pc-lqip.pc-hi{ filter: blur(0); }
+/* Homepage LOD image trick: the placeholder (img.pc-lqip) paints first
+   and never changes. The real image (img.pc-hires) is a second element
+   stacked exactly on top of it, invisible until it has fully decoded,
+   then revealed with a fast opacity fade. Because it's a plain opacity
+   change on an already-decoded image — never a src swap on the visible
+   layer — there is no blank frame at any point, and the crossfade is as
+   fast as a fade can be. Quick View's own .pc-slide images are untouched. */
+img.pc-lqip, img.pc-hires{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+img.pc-lqip{ filter: blur(2px); }
+img.pc-hires{ opacity:0; transition: opacity .15s linear; }
+img.pc-hires.pc-show{ opacity:1; }
 
 .pc-arrow{
   position:absolute; top:50%; z-index:3; transform: translateY(-50%);
@@ -5205,26 +5209,41 @@ function resolveCollectionItems(collectionName){
     return fullSrc.replace(/^images\//, "images/card/");
   }
 
+  /* Grid cards initially load a tiny/low-quality copy of the poster
+     (from images/lqip/, generated once by generate-lqip.py) so the card
+     paints almost instantly. The real image (from images/card/, a
+     right-sized copy for grid display — see generate-card-images.py) is
+     then decoded fully off-screen and faded in ON TOP of the placeholder,
+     which never moves or changes itself. That's deliberate: reassigning
+     an <img>'s own src (even to an already-cached URL) makes the browser
+     redecode it, which is what caused the brief blank flash during the
+     swap. Layering a second image and only revealing it once
+     img.decode() has resolved means the crossfade is a pure, instant
+     opacity change — there is nothing left to decode when it appears,
+     so nothing can go blank. This ONLY touches homepage/grid cards.
+     Quick View's .pc-slide gallery images are untouched and always load
+     full-res the normal way. */
   function upgradeCardImage(imgEl){
     if (!imgEl || imgEl.dataset.upgraded) return;
     imgEl.dataset.upgraded = "1";
     const full = imgEl.dataset.full;
-    if (!full){ imgEl.classList.add("pc-hi"); return; }
-    const hi = new Image();
+    if (!full) return;
+
+    const hi = document.createElement("img");
+    hi.className = imgEl.className.replace(/\bpc-lqip\b/, "").trim() + " pc-hires";
+    hi.alt = "";
     hi.decoding = "async";
     if ("fetchPriority" in hi) hi.fetchPriority = "high";
-    hi.onload = () => {
-      imgEl.src = full;
-      requestAnimationFrame(() => imgEl.classList.add("pc-hi"));
-    };
-    // Full-res failed too (bad path, offline, etc.) — clear the blur
-    // anyway so the card never gets stuck looking blurred.
-    hi.onerror = () => imgEl.classList.add("pc-hi");
+    imgEl.insertAdjacentElement("afterend", hi);
+
+    const reveal = () => requestAnimationFrame(() => hi.classList.add("pc-show"));
+    hi.onerror = () => hi.remove(); // full-res failed — leave the placeholder showing, never blank
     hi.src = full;
-    // Safety net: whatever happens, never let a card stay blurred for
-    // more than a moment — if neither onload nor onerror ever fires,
-    // force the blur off.
-    setTimeout(() => imgEl.classList.add("pc-hi"), 2500);
+    if (hi.decode){
+      hi.decode().then(reveal).catch(reveal); // catch: still reveal even if decode() rejects for this format
+    } else {
+      hi.onload = reveal;
+    }
   }
 
   /* Single shared observer for every LOD-managed image on the page
@@ -5248,23 +5267,23 @@ function resolveCollectionItems(collectionName){
     : null;
 
   /* Call once per rendered LOD image (<img class="pc-lqip">). The
-     placeholder itself is tiny (a few KB) and loads eagerly so the
-     blurred frame is already painted well before the card is anywhere
-     near the viewport — there's never a blank box to notice. The
-     expensive full-res image is what's proximity-gated, via the
-     shared observer above. Falls back gracefully (no IntersectionObserver
-     support, or the low-res file 404s) by upgrading immediately. */
+     placeholder itself is tiny (a few KB) and loads eagerly at high
+     priority so the blurred frame is already painted well before the
+     card is anywhere near the viewport — there's never a blank box to
+     notice. The expensive full-res image is what's proximity-gated, via
+     the shared observer above. Falls back gracefully (no
+     IntersectionObserver support, or the low-res file 404s) by
+     upgrading immediately. */
   function wireCardImageLOD(imgEl){
     if (!imgEl || imgEl.dataset.lodWired) return;
     imgEl.dataset.lodWired = "1";
     imgEl.addEventListener("error", function onLqipError(){
       if (imgEl.dataset.upgraded) return; // already past the placeholder stage
       imgEl.dataset.upgraded = "1";
+      // The lqip file itself was missing/broken — there's nothing under
+      // it to crossfade over, so just load full-res directly here.
       const full = imgEl.dataset.full;
       if (full) imgEl.src = full;
-      // The lqip file itself was missing/broken — we're already showing
-      // full-res here, so there's nothing left to blur. Clear it.
-      imgEl.classList.add("pc-hi");
     }, { once: true });
     if (lodObserver) lodObserver.observe(imgEl);
     else upgradeCardImage(imgEl);
