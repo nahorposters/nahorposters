@@ -762,6 +762,16 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 }
 .product-card:hover .pc-slide img{ transform: scale(1.05); }
 
+/* Homepage/grid product cards: single static image, no swipe gallery.
+   (The full swipe/dots gallery is still used inside Quick View, which
+   keeps its own .pc-swipe markup untouched — see renderQuickviewContent.) */
+.pc-image{ position:absolute; inset:0; }
+.pc-image img{
+  width:100%; height:100%; object-fit:cover;
+  transition: transform .5s var(--ease-lux);
+}
+.product-card:hover .pc-image img{ transform: scale(1.05); }
+
 .pc-arrow{
   position:absolute; top:50%; z-index:3; transform: translateY(-50%);
   width:32px; height:32px; border-radius:50%;
@@ -1597,6 +1607,15 @@ transition:.25s;
 .qv-size-btn.active{ border-color: var(--crimson); background: rgba(217,182,121,0.10); }
 .qv-size-btn.active span{ color: var(--crimson); }
 
+/* Room Transformer Collection only: the "size" row here isn't a picker
+   (each product has just one fixed poster count), so it renders as plain
+   read-only info text instead of a selectable button. See `sizeInfo` on
+   each Room Transformer design in CATEGORIES. */
+.qv-size-info{
+  font-family: var(--font-mono); font-size:13px; font-weight:600;
+  letter-spacing:.02em; color: var(--charcoal-text);
+}
+
 .qv-actions{ margin-top: 20px; display:flex; gap:12px; }
 .qv-actions .btn{ flex:1; justify-content:center; }
 .btn-buynow{
@@ -2257,10 +2276,11 @@ el.innerHTML=s;
     <div class="search-trending">
       <span class="search-label">Trending</span>
       <div class="tag-row">
-        <button class="tag">Cinematic Noir</button>
-        <button class="tag">Automotive Icons</button>
-        <button class="tag">Abstract Motion</button>
-        <button class="tag">Monochrome Studies</button>
+        <button class="tag">Anime</button>
+        <button class="tag">Cars</button>
+        <button class="tag">Webseries</button>
+        <button class="tag">Marvel</button>
+        <button class="tag">DC</button>
       </div>
     </div>
     <div class="search-results" id="searchResults"></div>
@@ -2411,6 +2431,80 @@ const PAPER_SPEC = "300GSM paper · adhesive tabs on back — sticks straight to
 
 /* Each catalog = one real product line with its own fixed price. */
 const CATEGORIES = [
+  {
+    /* "Room Transformer Collection" — a curated bundle shelf that sits
+       right below the "Shop by Pack" header and right above "A3 Split
+       Posters". Unlike every other category (where every design shares
+       one fixed cat.price), each design HERE carries its own `sizes`
+       array with a single price/label — so every product in this row
+       can have its own price AND its own poster count (Split of 3,
+       Split of 2, plain A4 set, A6 set, full bundle, etc). Edit each
+       design's `sizes[0].price` and `.label` freely; nothing else
+       needs to change.
+
+       - `price` below is just the fallback/reference price (used by
+         parts of the app that aren't size-aware, e.g. wishlist).
+       - `priceNote` is the little tag shown next to the section title
+         ("Starts from ₹299 only") — update the number in this string
+         whenever your cheapest product's price changes.
+       - `sizeInfo` on each design is plain read-only text shown where
+         other categories show a clickable size button — Room
+         Transformer products only ever have one fixed poster count,
+         so there's nothing to pick. Fill in the "_" blanks with the
+         actual counts, e.g. "3 Split + 2 A4 + 1 A6".
+       - Every design's 3rd image is its OWN image (C8PC{n}IM3), not a
+         single shared image like the other categories use — because
+         each product here can be a different format/poster count. */
+    id: "room-transformer",
+    name: "Room Transformer Collection",
+    sub: "One collection - Splits,A A4 & A3 posters",
+    price: 299,
+    priceNote: "Starts from ₹299 only",
+    designs: [
+      {
+        id: "rt-1",
+        name: "AUTOMOTIVE ROOM COLLECTION I",
+        collection: "Room Transformer,Cars",
+        note: "3 A4 sheets combine into 1 large piece on your wall.",
+        rating: 4.9, reviews: 0, stock: "In Stock",
+        sizes: [ { key: "set", label: "Set of 3", price: 299 } ],
+        sizeInfo: "3 Split + 2 A4 + 12 A6",
+        images: [
+          "images/C8PC1IM1_result.webp",
+          "images/C8PC1IM2_result.webp",
+          "images/C8PC1IM3_result.webp"
+        ]
+      },
+      {
+        id: "rt-2",
+        name: "ANIME ROOM COLLECTION I",
+        collection: "Room Transformer,Anime",
+        note: "2 A4 sheets combine into 1 piece on your wall.",
+        rating: 4.8, reviews: 0, stock: "In Stock",
+        sizes: [ { key: "set", label: "Set of 2", price: 249 } ],
+        sizeInfo: "3 Split + 8 A4",
+        images: [
+          "images/C8PC2IM1_result.webp",
+          "images/C8PC2IM2_result.webp",
+          "images/C8PC2IM3_result.webp"
+        ]
+      },
+      {
+        id: "rt-3",
+        name: "GOT ROOM COLLECRION",
+        collection: "Room Transformer,Webseries",
+        note: "6 individual A4 posters for a full gallery wall.",
+        rating: 4.7, reviews: 0, stock: "In Stock",
+        sizes: [ { key: "set", label: "Set of 6", price: 349 } ],
+        sizeInfo: "4 Split + 4 A4 + 8 A6",
+        images: [
+          "images/C8PC3IM1_result.webp",
+          "images/C8PC3IM2_result.webp",
+          "images/C8PC3IM3_result.webp"
+        ]
+      }
+    ]
+  },
   {
     id: "a3-split",
     name: "A3 Split Posters",
@@ -2960,6 +3054,87 @@ const CATEGORIES = [
     reviews: 0,
     stock: "In Stock",
     images: ["images/C1PC8IM1_result.webp","images/C1PC8IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-61",
+    name: "BREAKING BAD MONEY",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC61IM1_result.webp","images/C1PC61IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-62",
+    name: "BREAKING BAD TRUCK",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC62IM1_result.webp","images/C1PC62IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-63",
+    name: "BREAKING BAD CHEMISTRY",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC63IM1_result.webp","images/C1PC63IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-64",
+    name: "BREAKING BAD METH",
+    collection: "Webseries",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC64IM1_result.webp","images/C1PC64IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-65",
+    name: "RANGE ROVER DARK",
+    collection: "Car",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC65IM1_result.webp","images/C1PC65IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-66",
+    name: "MUSTANG",
+    collection: "Car",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC66IM1_result.webp","images/C1PC66IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-67",
+    name: "YUJI ITADORI FIRE",
+    collection: "Anime",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC67IM1_result.webp","images/C1PC67IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-68",
+    name: "YUJI ITADORI POSE",
+    collection: "Anime",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC68IM1_result.webp","images/C1PC68IM2_result.webp","images/C1IM3_result.webp"]
+},
+{
+    id: "a3-69",
+    name: "SAMURAI THROUGH SEASONS",
+    collection: "Anime,City",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C1PC69IM1_result.webp","images/C1PC69IM2_result.webp","images/C1IM3_result.webp"]
 }
       /* Add more A3 Split designs here — copy the template at the
          top of this file, paste it above this line, and give it its
@@ -3354,7 +3529,37 @@ const CATEGORIES = [
     reviews: 0,
     stock: "In Stock",
     images: ["images/C3PC9IM1_result.webp","images/C3PC9IM2_result.webp","images/C3IM3_result.webp"]
-}     /* Add more A4 Set-of-6 designs here (id "a46-5", images
+},
+{
+    id: "a46-10",
+    name: "OPENHEIMER",
+    collection: "Movie, Artist",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C3PC10IM1_result.webp","images/C3PC10IM2_result.webp","images/C3IM3_result.webp"]
+},
+{
+    id: "a46-11",
+    name: "NEYMAR JR",
+    collection: "Sports",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C3PC11IM1_result.webp","images/C3PC11IM2_result.webp","images/C3IM3_result.webp"]
+},
+{
+    id: "a46-12",
+    name: "MINI COOPER",
+    collection: "Car",
+    rating: 5,
+    reviews: 0,
+    stock: "In Stock",
+    images: ["images/C3PC12IM1_result.webp","images/C3PC12IM2_result.webp","images/C3IM3_result.webp"]
+}  
+
+
+/* Add more A4 Set-of-6 designs here (id "a46-5", images
          C3PC5IM1_result.webp…) */
     ]
   },
@@ -4018,6 +4223,45 @@ const CATEGORIES = [
         images: [
           "images/C6PC35IM1_result.webp",
           "images/C6PC35IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-36",
+        name: "SASUKE UCHIHA",
+        collection: "Anime",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC36IM1_result.webp",
+          "images/C6PC36IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-37",
+        name: "RYOMEN SUKUNA I",
+        collection: "Anime",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC37IM1_result.webp",
+          "images/C6PC37IM2_result.webp",
+          "images/C6IM3_result.webp"
+        ]
+      },
+      {
+        id: "a4s3-38",
+        name: "RYOMEN SUKUNA II",
+        collection: "Anime",
+        rating: 5,
+        reviews: 0,
+        stock: "In Stock",
+        images: [
+          "images/C6PC38IM1_result.webp",
+          "images/C6PC38IM2_result.webp",
           "images/C6IM3_result.webp"
         ]
       }
@@ -4902,11 +5146,8 @@ function resolveCollectionItems(collectionName){
     const stockClass = design.stock === "Low Stock" ? " low" : "";
     const inWishlist = state.wishlist.some(w => w.id === design.id);
 
-    const slides = design.images.map((src, i) => i === 0
-      ? `<div class="pc-slide"><img src="${src}" alt="${design.name}" loading="lazy" decoding="async"></div>`
-      : `<div class="pc-slide"><img data-src="${src}" alt="${design.name} — view ${i+1}" decoding="async"></div>`
-    ).join("");
-    const dots = design.images.map((_, i) => `<span class="pc-dot${i===0?" active":""}" data-idx="${i}"></span>`).join("");
+    // Homepage/grid cards show only the 1st image — no swipe gallery here
+    // (kept for Quick View only) so the grid stays light and smooth.
 
     return `
     <div class="product-card" data-id="${design.id}" data-category="${category.id}">
@@ -4916,11 +5157,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-swipe" data-swipe>${slides}</div>
-        ${design.images.length > 1 ? `
-          <button class="pc-arrow prev" data-action="prev" aria-label="Previous image" disabled><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="pc-arrow next" data-action="next" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
-          <div class="pc-dots">${dots}</div>` : ""}
+        <div class="pc-image"><img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -4947,53 +5184,9 @@ function resolveCollectionItems(collectionName){
     if (card.dataset.wired) return;
     card.dataset.wired = "1";
 
-    const swipe = card.querySelector("[data-swipe]");
-    const dots = card.querySelectorAll(".pc-dot");
-    const prevBtn = card.querySelector('[data-action="prev"]');
-    const nextBtn = card.querySelector('[data-action="next"]');
-
-    // Only the 1st slide ships with a real `src`. The 2nd/3rd slide
-    // images carry `data-src` instead, so they never hit the network
-    // on page load/scroll. We only wire their real `src` in the moment
-    // the shopper actually starts swiping this card's gallery (touch
-    // drag, arrow click, or dot click) — keeping the initial grid load
-    // light while still feeling instant once they interact.
-    let imagesActivated = false;
-    function activateCardImages(){
-      if (imagesActivated) return;
-      imagesActivated = true;
-      card.querySelectorAll(".pc-slide img[data-src]").forEach(img => {
-        img.src = img.dataset.src;
-        img.removeAttribute("data-src");
-      });
-    }
-
-    function updateDots(){
-      if (!swipe) return;
-      const idx = Math.round(swipe.scrollLeft / swipe.clientWidth);
-      dots.forEach((d,i) => d.classList.toggle("active", i === idx));
-      if (prevBtn) prevBtn.disabled = idx === 0;
-      if (nextBtn) nextBtn.disabled = idx >= dots.length - 1;
-    }
-    if (swipe){
-      let scrollTimer;
-      swipe.addEventListener("scroll", () => {
-        activateCardImages();
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(updateDots, 80);
-      }, { passive: true });
-      // Fires the instant a touch/mouse drag begins on the gallery,
-      // ahead of the scroll event itself — belt-and-braces so the
-      // swipe already has its image loading before the drag finishes.
-      swipe.addEventListener("pointerdown", activateCardImages, { passive: true });
-    }
-    dots.forEach(dot => dot.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      activateCardImages();
-      swipe.scrollTo({ left: swipe.clientWidth * parseInt(dot.dataset.idx), behavior: "smooth" });
-    }));
-
+    // Homepage/grid cards are single-image now (no swipe gallery), so
+    // this only wires the explicit action buttons plus the click-to-open
+    // Quick View — where the full multi-image gallery still lives.
     card.addEventListener("click", (e) => {
       const actionEl = e.target.closest("[data-action]");
       if (actionEl){
@@ -5008,11 +5201,10 @@ function resolveCollectionItems(collectionName){
         }
         if (action === "wishlist") toggleWishlist(design, actionEl);
         if (action === "share") shareProduct(design);
-        if (action === "prev"){ activateCardImages(); swipe.scrollBy({ left: -swipe.clientWidth, behavior: "smooth" }); }
-        if (action === "next"){ activateCardImages(); swipe.scrollBy({ left: swipe.clientWidth, behavior: "smooth" }); }
         return;
       }
-      // Anywhere else on the card — open this product's full page.
+      // Anywhere else on the card — open this product's full page,
+      // where all product images (multiple) are viewable.
       openQuickview(design, category);
     });
   }
@@ -5115,7 +5307,7 @@ function resolveCollectionItems(collectionName){
             <h3 class="category-block-title">${cat.name}</h3>
             <p class="category-block-sub">${cat.sub}</p>
           </div>
-          <div class="category-block-price">${money(categoryHasSizes(cat) ? categoryMinPrice(cat) : cat.price)}<span>${categoryHasSizes(cat) ? cat.sizes.find(s => s.price === categoryMinPrice(cat)).label + " sizes" : "per set"}</span></div>
+          <div class="category-block-price">${money(categoryHasSizes(cat) ? categoryMinPrice(cat) : cat.price)}<span>${cat.priceNote ? cat.priceNote : (categoryHasSizes(cat) ? cat.sizes.find(s => s.price === categoryMinPrice(cat)).label + " sizes" : "per set")}</span></div>
         </div>
         <div class="product-grid" id="grid-${cat.id}"><!-- injected --></div>
         <div class="carousel-controls" id="carousel-controls-${cat.id}">
@@ -5223,7 +5415,7 @@ function resolveCollectionItems(collectionName){
   }
 
   function shareProduct(p){
-    const url = window.location.href.split("#")[0] + "#" + p.id;
+    const url = window.location.href.split("#")[0] + "#product-" + p.id;
     if (navigator.share){
       navigator.share({ title: p.name, text: `Check out ${p.name} on Nahor Posters`, url }).catch(()=>{});
     } else if (navigator.clipboard){
@@ -5254,11 +5446,8 @@ function resolveCollectionItems(collectionName){
   function saleCardHTML(entry){
     const { design, category, salePrice, discountPercent } = entry;
     const inWishlist = state.wishlist.some(w => w.id === design.id);
-    const slides = design.images.map((src, i) => i === 0
-      ? `<div class="pc-slide"><img src="${src}" alt="${design.name}" loading="lazy" decoding="async"></div>`
-      : `<div class="pc-slide"><img data-src="${src}" alt="${design.name} — view ${i+1}" decoding="async"></div>`
-    ).join("");
-    const dots = design.images.map((_, i) => `<span class="pc-dot${i===0?" active":""}" data-idx="${i}"></span>`).join("");
+    // Homepage/grid cards show only the 1st image — no swipe gallery here
+    // (kept for Quick View only) so the grid stays light and smooth.
 
     return `
     <div class="product-card" data-id="${design.id}" data-category="${category.id}">
@@ -5268,11 +5457,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-swipe" data-swipe>${slides}</div>
-        ${design.images.length > 1 ? `
-          <button class="pc-arrow prev" data-action="prev" aria-label="Previous image" disabled><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="pc-arrow next" data-action="next" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
-          <div class="pc-dots">${dots}</div>` : ""}
+        <div class="pc-image"><img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -6529,13 +6714,17 @@ function resolveCollectionItems(collectionName){
           <p class="qv-desc">${PAPER_SPEC}. ${p.note || category.sub}.</p>
           <p class="qv-stock${stockLow?" low":""}"><i class="fa-solid fa-circle" style="font-size:7px;"></i> ${p.stock}</p>
 
-          ${designHasSizes(p, category) ? `
+          ${designHasSizes(p, category) ? (category.id === "room-transformer" ? `
+          <div class="qv-size-row">
+            <span class="qv-qty-label">${p.sizeLabel || "Size"}</span>
+            <span class="qv-size-info">${p.sizeInfo || qvSelectedSize.label}</span>
+          </div>` : `
           <div class="qv-size-row">
             <span class="qv-qty-label">${p.sizeLabel || "Size"}</span>
             <div class="qv-size-options" id="qvSizeOptions">
               ${designSizes(p, category).map(s => `<button type="button" class="qv-size-btn${s.key === qvSelectedSize.key ? " active" : ""}" data-size="${s.key}">${s.label}</button>`).join("")}
             </div>
-          </div>` : ""}
+          </div>`) : ""}
 
           ${category.id === "design-your-own" ? `
           <div class="qv-upload-row" id="qvUploadRow">
@@ -6918,6 +7107,31 @@ function resolveCollectionItems(collectionName){
     // visible flash/pop where already-rendered cards briefly vanished and
     // re-animated in.
     initRipple();
+
+    openFromInitialHash();
+  }
+
+  /* Opens the right view when the page is first loaded with a shared
+     link in the URL, e.g. "#product-123" or "#collection-Movies".
+     (popstate only fires on back/forward navigation, not on a fresh
+     load, so this is needed separately from the popstate handler
+     above to make shared links actually land on the right product.) */
+  function openFromInitialHash(){
+    const hash = decodeURIComponent(window.location.hash || "");
+    if (!hash) return;
+
+    if (hash.indexOf("#product-") === 0){
+      const id = hash.slice("#product-".length);
+      const found = findDesign(id);
+      if (found){
+        renderQuickviewContent(found.design, found.category);
+        openModal("quickviewModal");
+        try{ history.replaceState({ nahorProduct: found.design.id }, "", hash); }catch(e){}
+      }
+    } else if (hash.indexOf("#collection-") === 0){
+      const name = hash.slice("#collection-".length);
+      openCollectionView(name);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", init);
