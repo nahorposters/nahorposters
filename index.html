@@ -779,8 +779,8 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
    never causes a visible "pop". Grid cards are small, so the low-res
    stage is barely perceptible even unblurred. Quick View's own
    .pc-slide images are untouched by this (see .pc-slide img above). */
-.pc-image img.pc-lqip{ filter: blur(7px); transition: filter .45s ease; }
-.pc-image img.pc-lqip.pc-hi{ filter: blur(0); }
+img.pc-lqip{ filter: blur(7px); transition: filter .45s ease; background: var(--black-3); }
+img.pc-lqip.pc-hi{ filter: blur(0); }
 
 .pc-arrow{
   position:absolute; top:50%; z-index:3; transform: translateY(-50%);
@@ -5215,17 +5215,36 @@ function resolveCollectionItems(collectionName){
     setTimeout(() => imgEl.classList.add("pc-hi"), 2500);
   }
 
-  /* Call once per rendered card's <img class="pc-lqip">. Kicks off the
-     hi-res preload as soon as the low-res placeholder has painted (or
-     immediately, if it's already cached/painted by the time we wire
-     it up), and gracefully falls back to the full image if the low-res
-     file 404s. */
+  /* Single shared observer for every LOD-managed image on the page
+     (product cards, collection boxes, design-your-own tiles). Rather
+     than upgrading a card the instant its tiny placeholder happens to
+     load — which, chained after a native lazy-load, could still land
+     mid-scroll — we start the full-res fetch as soon as the card comes
+     within LOD_LEAD_PX of the viewport. That's comfortably more than a
+     screen-height of lead on typical scroll speeds, so by the time the
+     card actually scrolls into view the swap has already happened
+     off-screen and the user never sees it happen. */
+  const LOD_LEAD_PX = Math.max(900, Math.round(window.innerHeight * 1.3));
+  const lodObserver = ("IntersectionObserver" in window)
+    ? new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          upgradeCardImage(entry.target);
+          lodObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: `${LOD_LEAD_PX}px`, threshold: 0 })
+    : null;
+
+  /* Call once per rendered LOD image (<img class="pc-lqip">). The
+     placeholder itself is tiny (a few KB) and loads eagerly so the
+     blurred frame is already painted well before the card is anywhere
+     near the viewport — there's never a blank box to notice. The
+     expensive full-res image is what's proximity-gated, via the
+     shared observer above. Falls back gracefully (no IntersectionObserver
+     support, or the low-res file 404s) by upgrading immediately. */
   function wireCardImageLOD(imgEl){
     if (!imgEl || imgEl.dataset.lodWired) return;
     imgEl.dataset.lodWired = "1";
-    const kickUpgrade = () => upgradeCardImage(imgEl);
-    if (imgEl.complete && imgEl.naturalWidth > 0) kickUpgrade();
-    else imgEl.addEventListener("load", kickUpgrade, { once: true });
     imgEl.addEventListener("error", function onLqipError(){
       if (imgEl.dataset.upgraded) return; // already past the placeholder stage
       imgEl.dataset.upgraded = "1";
@@ -5235,6 +5254,8 @@ function resolveCollectionItems(collectionName){
       // full-res here, so there's nothing left to blur. Clear it.
       imgEl.classList.add("pc-hi");
     }, { once: true });
+    if (lodObserver) lodObserver.observe(imgEl);
+    else upgradeCardImage(imgEl);
   }
 
   /* ============================================================
@@ -5251,7 +5272,7 @@ function resolveCollectionItems(collectionName){
     // (kept for Quick View only) so the grid stays light and smooth.
 
     const imageHTML = useLOD
-      ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`
+      ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="eager" fetchpriority="low" decoding="async">`
       : `<img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`;
 
     return `
@@ -5439,12 +5460,13 @@ function resolveCollectionItems(collectionName){
     if (!wrap) return;
     wrap.innerHTML = COLLECTION_BOXES.map(c => `
       <button type="button" class="collection-box" data-collection="${c.name}" aria-label="Shop the ${c.name} collection">
-        <img src="${c.image}" alt="" loading="lazy" decoding="async">
+        <img class="pc-lqip" src="${lqipSrc(c.image)}" data-full="${c.image}" alt="" loading="eager" fetchpriority="low" decoding="async">
       </button>
     `).join("");
     wrap.querySelectorAll(".collection-box").forEach(box => {
       box.addEventListener("click", () => openCollectionView(box.dataset.collection));
     });
+    wrap.querySelectorAll(".collection-box img.pc-lqip").forEach(wireCardImageLOD);
     initCategoryCarousel({ id: "collections", designs: COLLECTION_BOXES });
   }
 
@@ -5565,7 +5587,7 @@ function resolveCollectionItems(collectionName){
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
         </div>
-        <div class="pc-image"><img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async"></div>
+        <div class="pc-image"><img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${design.images[0]}" alt="${design.name}" loading="eager" fetchpriority="low" decoding="async"></div>
       </div>
       <div class="pc-body">
         <span class="pc-collection">${design.collection}</span>
@@ -7101,7 +7123,7 @@ function resolveCollectionItems(collectionName){
 
     grid.innerHTML = category.designs.map(d => `
       <button type="button" class="dyo-tile" data-id="${d.id}" aria-label="${d.name} — open Quick View">
-        <img class="dyo-tile-img" src="${d.images[0]}" alt="${d.name}" loading="lazy" decoding="async">
+        <img class="dyo-tile-img pc-lqip" src="${lqipSrc(d.images[0])}" data-full="${d.images[0]}" alt="${d.name}" loading="eager" fetchpriority="low" decoding="async">
         <span class="dyo-tile-overlay"></span>
         <span class="dyo-tile-eyebrow">Custom</span>
         <span class="dyo-tile-title">${d.tileLabel || d.name}</span>
@@ -7115,6 +7137,7 @@ function resolveCollectionItems(collectionName){
         if (design) openQuickview(design, category);
       });
     });
+    grid.querySelectorAll(".dyo-tile-img.pc-lqip").forEach(wireCardImageLOD);
   }
 
   /* ============================================================
