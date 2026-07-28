@@ -493,7 +493,7 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
   overflow: hidden;
 }
 @media (min-width: 701px){
-  .hero-video-wrap{ left: 6vw; right: 6vw; }
+  .hero-video-wrap{ left: 6vw; right: 6vw; top: var(--header-h); bottom: 0; }
 }
 .hero-video{
   width: 100%;
@@ -2504,7 +2504,7 @@ const CATEGORIES = [
         collection: "Room Transformer,Cars",
         note: "3 A4 sheets combine into 1 large piece on your wall.",
         rating: 4.9, reviews: 0, stock: "In Stock",
-        sizes: [ { key: "set", label: "Set of 3", price: 299 } ],
+        sizes: [ { key: "set", label: "Set of 3", price: 379 } ],
         sizeInfo: "3 Split + 2 A4 + 12 A6",
         images: [
           "images/C8PC1IM1_result.webp",
@@ -2518,7 +2518,7 @@ const CATEGORIES = [
         collection: "Room Transformer,Anime",
         note: "2 A4 sheets combine into 1 piece on your wall.",
         rating: 4.8, reviews: 0, stock: "In Stock",
-        sizes: [ { key: "set", label: "Set of 2", price: 249 } ],
+        sizes: [ { key: "set", label: "Set of 2", price: 349 } ],
         sizeInfo: "3 Split + 8 A4",
         images: [
           "images/C8PC2IM1_result.webp",
@@ -2532,7 +2532,7 @@ const CATEGORIES = [
         collection: "Room Transformer,Webseries",
         note: "6 individual A4 posters for a full gallery wall.",
         rating: 4.7, reviews: 0, stock: "In Stock",
-        sizes: [ { key: "set", label: "Set of 6", price: 349 } ],
+        sizes: [ { key: "set", label: "Set of 6", price: 339 } ],
         sizeInfo: "4 Split + 4 A4 + 8 A6",
         images: [
           "images/C8PC3IM1_result.webp",
@@ -5375,10 +5375,14 @@ function resolveCollectionItems(collectionName){
         e.stopPropagation();
         const action = actionEl.dataset.action;
         if (action === "addcart"){
-          // Categories with a size choice (A4/A6) can't be added straight
-          // from the grid card — open Quick View so the size gets picked first.
-          if (designHasSizes(design, category)) openQuickview(design, category);
-          else addToCart(design, category);
+          // Only open Quick View when there's an actual size CHOICE to make
+          // (2+ options, e.g. A4/A6). Categories like Room Collections carry
+          // a single fixed "size" entry just for its price/label — those add
+          // straight to the cart from the grid card, same as every other
+          // no-size product.
+          const sizes = designSizes(design, category);
+          if (sizes && sizes.length > 1) openQuickview(design, category);
+          else addToCart(design, category, 1, (sizes && sizes.length === 1) ? sizes[0] : null);
         }
         if (action === "wishlist") toggleWishlist(design, actionEl);
         if (action === "share") shareProduct(design);
