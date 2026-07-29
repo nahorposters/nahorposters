@@ -2060,13 +2060,23 @@ section{padding:10px 4.5vw!important;}
 
           active = active === "A" ? "B" : "A";
 
-          // The clip that just finished ("ended") sits paused on its
-          // first frame for 0.5s (while it's already sliding out), then
-          // starts playing from the top for the rest of its exit —
-          // a real pause before playback resumes, not a jump into
-          // the clip.
-          try { leavingVideo.currentTime = 0; } catch(e){}
+          // The clip that just finished ("ended") must sit paused exactly
+          // on frame 0 (not its last frame) for 0.5s while it's already
+          // sliding out, then resume playing from there. Setting
+          // currentTime doesn't apply instantly — it's confirmed by the
+          // "seeked" event — so we wait for that before treating it as
+          // paused-at-frame-0, otherwise it can still show its old last
+          // frame for a moment first.
           leavingVideo.pause();
+          var leavingSeekConfirmed = false;
+          function onLeavingSeeked(){
+            if (leavingSeekConfirmed) return;
+            leavingSeekConfirmed = true;
+            leavingVideo.removeEventListener("seeked", onLeavingSeeked);
+            leavingVideo.pause(); // make sure it's still paused once the frame-0 seek lands
+          }
+          leavingVideo.addEventListener("seeked", onLeavingSeeked);
+          try { leavingVideo.currentTime = 0; } catch(e){}
           setTimeout(function(){
             var lp = leavingVideo.play();
             if (lp && lp.catch) lp.catch(function(){});
