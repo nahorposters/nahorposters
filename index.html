@@ -2098,7 +2098,19 @@ section{padding:10px 4.5vw!important;}
           }, SLIDE_MS + 40);
         }
 
+        // When "ended" fires, some browsers have already stopped a frame
+        // or two short of the true last frame. Nudge to a hair before the
+        // reported duration so the frame that's actually painted is the
+        // real last frame of the clip.
+        function snapToLastFrame(video){
+          try {
+            var d = video.duration;
+            if (isFinite(d) && d > 0) { video.currentTime = Math.max(0, d - 0.03); }
+          } catch(e){}
+        }
+
         function handleEnded(video, isA){
+          snapToLastFrame(video);
           if (isA && !firstCycleDone) {
             aReplayCount++;
             if (aReplayCount < 2) { safePlay(video); return; }
