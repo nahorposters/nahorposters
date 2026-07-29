@@ -523,6 +523,8 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 }
 .hero-slide .hero-video{ backface-visibility: hidden; transform: translateZ(0); }
 #heroSlideB{ transform: translateX(100%); }
+#heroSlideC{ transform: translateX(100%); }
+#heroSlideD{ transform: translateX(100%); }
 
 @media (prefers-reduced-motion: reduce){
   .hero-slide{ transition: none; }
@@ -759,6 +761,7 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
 .pc-price-old,.pc-discount{font-size:9px!important;}
 .pc-cta{margin-top:5px!important;padding:7px!important;height:34px!important;font-size:10px!important;}
 .pc-badge{top:8px!important;left:8px!important;font-size:7px!important;padding:3px 7px!important;}
+.pc-badge.on-sale-tag{left:auto!important;right:8px!important;}
 .pc-actions{display:none!important;}
 .pc-quickview{left:8px!important;right:8px!important;bottom:18px!important;padding:7px!important;font-size:10px!important;opacity:0!important;transform:translateY(10px)!important;pointer-events:none!important;}
 .product-card.active .pc-quickview{opacity:1!important;transform:translateY(0)!important;pointer-events:auto!important;}
@@ -881,6 +884,12 @@ img.pc-hires.pc-show{ opacity:1; }
   color: #fff; border-color: transparent; font-weight:700;
 }
 .pc-badge.sale-badge::before{ display:none; }
+.pc-badge.on-sale-tag{
+  left:auto; right:14px;
+  background: linear-gradient(145deg, var(--crimson-glow), var(--crimson));
+  color: #fff; border-color: transparent; font-weight:700;
+}
+.pc-badge.on-sale-tag::before{ display:none; }
 .sale-countdown{
   display:inline-flex; align-items:center; gap:8px; margin-top:16px;
   padding: 9px 16px; border-radius: 100px;
@@ -2011,6 +2020,38 @@ section{padding:10px 4.5vw!important;}
             <source src="videos/hero-loop2_1.mp4" type="video/mp4">
           </video>
         </div>
+        <!-- Time-limited slide: only shows Aug 8 - Aug 18, then auto-removed.
+             Sources use data-src (not src) so nothing is fetched outside the
+             promo window; the script below assigns real src only when active. -->
+        <div class="hero-slide" id="heroSlideC">
+          <video
+            id="heroVideoC"
+            class="hero-video"
+            muted
+            playsinline
+            preload="none"
+            disablepictureinpicture
+            disableremoteplayback>
+            <source data-src="videos/hero-loop3_2.mp4" media="(min-width: 701px)" type="video/mp4">
+            <source data-src="videos/hero-loop3_1.mp4" type="video/mp4">
+          </video>
+        </div>
+        <!-- Time-limited slide: only shows Aug 19 - Aug 29, then auto-removed.
+             Sources use data-src (not src) so nothing is fetched outside the
+             promo window; the script below assigns real src only when active. -->
+        <div class="hero-slide" id="heroSlideD">
+          <video
+            id="heroVideoD"
+            class="hero-video"
+            muted
+            playsinline
+            preload="none"
+            disablepictureinpicture
+            disableremoteplayback>
+            <source data-src="videos/hero-loop4_2.mp4" media="(min-width: 701px)" type="video/mp4">
+            <source data-src="videos/hero-loop4_1.mp4" type="video/mp4">
+          </video>
+        </div>
       </div>
       <div id="heroVideoError" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:var(--font-mono); font-size:13px; color:#B23B3B; background:#FBEAEA; z-index:1;"></div>
     </div>
@@ -2025,26 +2066,117 @@ section{padding:10px 4.5vw!important;}
       (function(){
         var slideA = document.getElementById("heroSlideA");
         var slideB = document.getElementById("heroSlideB");
+        var slideC = document.getElementById("heroSlideC");
+        var slideD = document.getElementById("heroSlideD");
         var videoA = document.getElementById("heroVideoA");
         var videoB = document.getElementById("heroVideoB");
+        var videoC = document.getElementById("heroVideoC");
+        var videoD = document.getElementById("heroVideoD");
         var err = document.getElementById("heroVideoError");
 
         function showError(v){
-          var msg = "Video failed to load — check that hero-loop.mp4, hero-loop2.mp4, hero-loop2_1.mp4 and hero-loop2_2.mp4 all exist inside the videos/ folder.";
+          var msg = "Video failed to load — check that hero-loop.mp4, hero-loop2.mp4, hero-loop2_1.mp4, hero-loop2_2.mp4, hero-loop3_1.mp4, hero-loop3_2.mp4, hero-loop4_1.mp4 and hero-loop4_2.mp4 all exist inside the videos/ folder.";
           console.error(msg, v.error);
           err.textContent = msg;
           err.style.display = "flex";
         }
         videoA.addEventListener("error", function(){ showError(videoA); });
         videoB.addEventListener("error", function(){ showError(videoB); });
+        videoC.addEventListener("error", function(){ showError(videoC); });
+        videoD.addEventListener("error", function(){ showError(videoD); });
 
-        // --- Cycle: hero-loop plays twice on first load, then hero-loop
-        // and hero-loop2 alternate forever, playing once each, with a
-        // smooth left-slide handoff between them every time. ---
+        // --- Time-limited slide: hero-loop3 (mobile: hero-loop3_1, PC:
+        // hero-loop3_2) shows up as the FIRST slide in the rotation only
+        // between 8 Aug and 18 Aug, then is automatically removed again —
+        // hero-loop / hero-loop2 keep working exactly as before either way. ---
+        var now = new Date();
+        var promoStart = new Date(2026, 7, 8, 0, 0, 0);   // 8 Aug 2026 (month is 0-indexed)
+        var promoEnd   = new Date(2026, 7, 18, 0, 0, 0);  // 18 Aug 2026 — promo removed from this date on
+        var promoActive = now >= promoStart && now < promoEnd;
+
+        // --- Time-limited slide: hero-loop4 (mobile: hero-loop4_1, PC:
+        // hero-loop4_2) shows up as the FIRST slide in the rotation only
+        // between 19 Aug and 29 Aug (inclusive), then is automatically
+        // removed again — hero-loop / hero-loop2 / hero-loop3 keep working
+        // exactly as before either way. ---
+        var promoStart2 = new Date(2026, 7, 19, 0, 0, 0);  // 19 Aug 2026
+        var promoEnd2   = new Date(2026, 7, 30, 0, 0, 0);  // 30 Aug 2026 — promo removed from this date on (i.e. active through end of 29 Aug)
+        var promoActive2 = now >= promoStart2 && now < promoEnd2;
+
+        var nodes = {
+          A: { slide: slideA, video: videoA },
+          B: { slide: slideB, video: videoB },
+          C: { slide: slideC, video: videoC },
+          D: { slide: slideD, video: videoD }
+        };
+
+        // Order of the rotation. C (hero-loop3) and D (hero-loop4) only take
+        // part, and only ever in 1st place, during their own promo window.
+        // The two windows never overlap, so at most one of them is active.
+        var order = promoActive ? ["C", "A", "B"] : (promoActive2 ? ["D", "A", "B"] : ["A", "B"]);
+
+        if (promoActive) {
+          // Assign the real sources now (they're left as data-src in the
+          // markup so nothing is fetched outside the promo window).
+          var srcEls = videoC.querySelectorAll("source[data-src]");
+          for (var i = 0; i < srcEls.length; i++) {
+            srcEls[i].src = srcEls[i].getAttribute("data-src");
+          }
+          videoC.preload = "auto";
+          videoC.load();
+
+          // heroVideoA has an "autoplay" attribute for the normal (non-promo)
+          // case where it's the first slide. C is first now, so make sure A
+          // stays paused/parked until the rotation actually reaches it.
+          videoA.pause();
+          try { videoA.currentTime = 0; } catch(e){}
+        }
+
+        if (promoActive2) {
+          // Assign the real sources now (they're left as data-src in the
+          // markup so nothing is fetched outside the promo window).
+          var srcEls2 = videoD.querySelectorAll("source[data-src]");
+          for (var j = 0; j < srcEls2.length; j++) {
+            srcEls2[j].src = srcEls2[j].getAttribute("data-src");
+          }
+          videoD.preload = "auto";
+          videoD.load();
+
+          // heroVideoA has an "autoplay" attribute for the normal (non-promo)
+          // case where it's the first slide. D is first now, so make sure A
+          // stays paused/parked until the rotation actually reaches it.
+          videoA.pause();
+          try { videoA.currentTime = 0; } catch(e){}
+        }
+
+        // --- Cycle: the first slide in `order` plays twice on first load,
+        // then every slide in `order` alternates forever, playing once
+        // each, with a smooth left-slide handoff between them every time. ---
         var SLIDE_MS = 1200; // must match the .hero-slide transition duration
-        var active = "A";
+        var currentIndex = 0;
         var firstCycleDone = false;
-        var aReplayCount = 0;
+        var firstReplayCount = 0;
+
+        // Snap whichever slide is first in the rotation into view (no
+        // transition) and park every other slide off-screen to the right,
+        // then start it playing.
+        (function initPositions(){
+          for (var key in nodes) {
+            if (!nodes.hasOwnProperty(key)) continue;
+            var s = nodes[key].slide;
+            s.style.transition = "none";
+            s.style.transform = (key === order[0]) ? "translateX(0%)" : "translateX(100%)";
+          }
+          void slideC.offsetWidth; // force reflow before re-enabling transitions
+          for (var key2 in nodes) {
+            if (!nodes.hasOwnProperty(key2)) continue;
+            nodes[key2].slide.style.transition = "";
+          }
+          var firstVideo = nodes[order[0]].video;
+          try { firstVideo.currentTime = 0; } catch(e){}
+          var p = firstVideo.play();
+          if (p && p.catch) p.catch(function(){});
+        })();
 
         function safePlay(video){
           try { video.currentTime = 0; } catch(e){}
@@ -2059,12 +2191,13 @@ section{padding:10px 4.5vw!important;}
         var ENTER_PLAY_LEAD_MS = 150;
 
         function slideToNext(){
-          var leavingSlide  = active === "A" ? slideA : slideB;
-          var enteringSlide = active === "A" ? slideB : slideA;
-          var leavingVideo  = active === "A" ? videoA : videoB;
-          var enteringVideo = active === "A" ? videoB : videoA;
+          var nextIndex = (currentIndex + 1) % order.length;
+          var leavingNode  = nodes[order[currentIndex]];
+          var enteringNode = nodes[order[nextIndex]];
+          currentIndex = nextIndex;
 
-          active = active === "A" ? "B" : "A";
+          var leavingSlide = leavingNode.slide, leavingVideo = leavingNode.video;
+          var enteringSlide = enteringNode.slide, enteringVideo = enteringNode.video;
 
           // The clip that just finished ("ended") stays paused exactly on
           // its own last frame — no seeking, no resuming — for the whole
@@ -2109,18 +2242,20 @@ section{padding:10px 4.5vw!important;}
           } catch(e){}
         }
 
-        function handleEnded(video, isA){
+        function handleEnded(video, isFirstInOrder){
           snapToLastFrame(video);
-          if (isA && !firstCycleDone) {
-            aReplayCount++;
-            if (aReplayCount < 2) { safePlay(video); return; }
+          if (isFirstInOrder && !firstCycleDone) {
+            firstReplayCount++;
+            if (firstReplayCount < 2) { safePlay(video); return; }
             firstCycleDone = true;
           }
           slideToNext();
         }
 
-        videoA.addEventListener("ended", function(){ handleEnded(videoA, true); });
-        videoB.addEventListener("ended", function(){ handleEnded(videoB, false); });
+        videoA.addEventListener("ended", function(){ handleEnded(videoA, order[0] === "A"); });
+        videoB.addEventListener("ended", function(){ handleEnded(videoB, order[0] === "B"); });
+        videoC.addEventListener("ended", function(){ handleEnded(videoC, order[0] === "C"); });
+        videoD.addEventListener("ended", function(){ handleEnded(videoD, order[0] === "D"); });
       })();
     </script>
 
@@ -4568,6 +4703,14 @@ const SALE_ITEMS = [
 const SALE_ENDS_AT = "2026-07-20T23:59:59";
 
 function categoryById(id){ return CATEGORIES.find(c => c.id === id); }
+/* Looks up whether a given design (in its category) is currently on
+   sale, per the SALE_ITEMS list above. Used everywhere a product card
+   for this design/category is rendered — not just the dedicated Sale
+   section — so the discounted price + "ON SALE" tag show up wherever
+   the product appears on the site. */
+function findSaleItem(designId, categoryId){
+  return SALE_ITEMS.find(it => it.designId === designId && it.categoryId === categoryId) || null;
+}
 function findDesign(designId){
   for (const cat of CATEGORIES){
     const d = cat.designs.find(x => x.id === designId);
@@ -5446,6 +5589,13 @@ function resolveCollectionItems(collectionName){
     const stockClass = design.stock === "Low Stock" ? " low" : "";
     const inWishlist = state.wishlist.some(w => w.id === design.id);
 
+    // If this exact design/category is in SALE_ITEMS, show the same
+    // discounted price + tag here as on the dedicated Sale section —
+    // sized products are left out of this (their price isn't a single
+    // flat category.price to discount against).
+    const saleItem = !designHasSizes(design, category) ? findSaleItem(design.id, category.id) : null;
+    const salePrice = saleItem ? Math.round(category.price * (1 - saleItem.discountPercent / 100)) : null;
+
     // Homepage/grid cards show only the 1st image — no swipe gallery here
     // (kept for Quick View only) so the grid stays light and smooth.
 
@@ -5453,10 +5603,18 @@ function resolveCollectionItems(collectionName){
       ? `<img class="pc-lqip" src="${lqipSrc(design.images[0])}" data-full="${cardSrc(design.images[0])}" alt="${design.name}" loading="eager" fetchpriority="high" decoding="async">`
       : `<img src="${design.images[0]}" alt="${design.name}" loading="lazy" decoding="async">`;
 
+    const priceRowHTML = saleItem
+      ? `<span class="pc-price">${money(salePrice)}</span>
+         <span class="pc-price-old">${money(category.price)}</span>
+         <span class="pc-discount">${saleItem.discountPercent}% OFF</span>`
+      : `<span class="pc-price">${designHasSizes(design, category) ? money(designMinPrice(design, category)) : money(category.price)}</span>
+         <span class="pc-price-sub">                               </span>`;
+
     return `
     <div class="product-card" data-id="${design.id}" data-category="${category.id}">
       <div class="pc-media">
         <span class="pc-badge${stockClass}">${design.stock}</span>
+        ${saleItem ? `<span class="pc-badge on-sale-tag">ON SALE</span>` : ""}
         <div class="pc-actions">
           <button class="pc-action-btn wishlist-btn${inWishlist ? " active" : ""}" data-action="wishlist" aria-label="Add to wishlist"><i class="fa-${inWishlist ? "solid" : "regular"} fa-heart"></i></button>
           <button class="pc-action-btn" data-action="share" aria-label="Share this poster"><i class="fa-solid fa-share-nodes"></i></button>
@@ -5471,8 +5629,7 @@ function resolveCollectionItems(collectionName){
         </div>
         <p class="pc-spec">${PAPER_SPEC}</p>
         <div class="pc-price-row">
-          <span class="pc-price">${designHasSizes(design, category) ? money(designMinPrice(design, category)) : money(category.price)}</span>
-          <span class="pc-price-sub">                               </span>
+          ${priceRowHTML}
         </div>
         <button class="pc-cta" data-action="addcart"><i class="fa-solid fa-bag-shopping"></i> Add to Cart</button>
       </div>
@@ -5487,6 +5644,14 @@ function resolveCollectionItems(collectionName){
   function wireProductCard(card, design, category){
     if (card.dataset.wired) return;
     card.dataset.wired = "1";
+
+    // If this design/category is on sale, everything downstream from
+    // this card (Add to Cart, Quick View) should use the discounted
+    // price — same as what the card itself is showing.
+    const saleItem = !designHasSizes(design, category) ? findSaleItem(design.id, category.id) : null;
+    if (saleItem){
+      category = { ...category, price: Math.round(category.price * (1 - saleItem.discountPercent / 100)) };
+    }
 
     const lqipImg = card.querySelector(".pc-image img.pc-lqip");
     if (lqipImg) wireCardImageLOD(lqipImg);
@@ -5800,7 +5965,7 @@ function resolveCollectionItems(collectionName){
     grid.innerHTML = items.map(saleCardHTML).join("");
     grid.querySelectorAll(".product-card").forEach(card => {
       const entry = items.find(it => it.design.id === card.dataset.id);
-      if (entry) wireProductCard(card, entry.design, { ...entry.category, price: entry.salePrice });
+      if (entry) wireProductCard(card, entry.design, entry.category);
     });
     initRipple();
     initCategoryCarousel({ id: "sale", designs: items });
@@ -6007,12 +6172,14 @@ function resolveCollectionItems(collectionName){
     body.innerHTML = state.wishlist.map(p => {
       const found = findDesign(p.id);
       const cat = found ? found.category : null;
+      const saleItem = (found && !designHasSizes(found.design, cat)) ? findSaleItem(p.id, cat.id) : null;
+      const displayPrice = saleItem ? Math.round(cat.price * (1 - saleItem.discountPercent / 100)) : (cat ? cat.price : null);
       return `
       <div class="drawer-item" data-id="${p.id}">
         <img src="${p.images[0]}" alt="${p.name}" loading="lazy" decoding="async">
         <div class="drawer-item-info">
           <span class="drawer-item-name">${p.name}</span>
-          <span class="drawer-item-spec">${p.collection}${cat ? " · " + money(cat.price) : ""}</span>
+          <span class="drawer-item-spec">${p.collection}${cat ? " · " + money(displayPrice) : ""}${saleItem ? " · ON SALE" : ""}</span>
           <div class="drawer-item-bottom">
             <button class="drawer-item-remove" data-action="movecart">Move to Bag</button>
           </div>
@@ -6024,8 +6191,11 @@ function resolveCollectionItems(collectionName){
       const id = row.dataset.id;
       const found = findDesign(id);
       if (!found) return;
+      let cat = found.category;
+      const saleItem = !designHasSizes(found.design, cat) ? findSaleItem(id, cat.id) : null;
+      if (saleItem) cat = { ...cat, price: Math.round(cat.price * (1 - saleItem.discountPercent / 100)) };
       row.querySelector("[data-action='movecart']").addEventListener("click", () => {
-        addToCart(found.design, found.category);
+        addToCart(found.design, cat);
         toggleWishlist(found.design, null);
       });
     });
