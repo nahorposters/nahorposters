@@ -2055,63 +2055,87 @@ section{padding:10px 4.5vw!important;}
         function slideToNext(){
           var leavingSlide  = active === "A" ? slideA : slideB;
           var enteringSlide = active === "A" ? slideB : slideA;
+          var leavingVideo  = active === "A" ? videoA : videoB;
           var enteringVideo = active === "A" ? videoB : videoA;
 
           active = active === "A" ? "B" : "A";
 
-          var started = false;
-          function beginSlide(){
-            if (started) return;
-            started = true;
+          // The clip that just finished ("ended") sits paused on its
+          // first frame for 1s (while it's already sliding out), then
+          // starts playing from the top for the rest of its exit —
+          // a real 1s pause before playback resumes, not a jump into
+          // the clip.
+          try { leavingVideo.currentTime = 0; } catch(e){}
+          leavingVideo.pause();
+          setTimeout(function(){
+            var lp = leavingVideo.play();
+            if (lp && lp.catch) lp.catch(function(){});
+          }, 1000);
 
-            // The clip is confirmed to be actually rendering frames now
-            // (not just "requested to play"), so the slide-in motion and
-            // the video's own motion start together — no frozen frame,
-            // no cut, just one continuous move from the very first frame.
-            leavingSlide.style.transform  = "translateX(-100%)";
-            enteringSlide.style.transform = "translateX(0%)";
+          // The incoming clip slides in playing its own *tail end*, timed
+          // so it reaches its natural end right as it finishes sliding
+          // into place. Playback only starts once the seek to that tail
+          // position has actually landed — otherwise some browsers begin
+          // playing from wherever the clip was last left off before the
+          // seek finishes, which looked like it was starting mid-video.
+          // Once placed, its "ended" handler (below) catches that this
+          // was the preroll, rewinds it to the start, and lets it play
+          // through in full from there.
+          var dur = enteringVideo.duration;
+          var slideSec = SLIDE_MS / 1000;
+          var playFromTail = !!(dur && isFinite(dur) && dur > slideSec);
+          var targetTime = playFromTail ? (dur - slideSec) : 0;
+          enteringVideo._preroll = playFromTail;
 
-            // Once fully off-screen, snap the leaving slide back to the
-            // right (no transition) and pause its video, ready for its
-            // next turn — invisible to the viewer since it's outside the
-            // clipped .hero-video-wrap.
-            setTimeout(function(){
-              var leavingVideo = enteringVideo === videoA ? videoB : videoA;
-              leavingSlide.style.transition = "none";
-              leavingSlide.style.transform = "translateX(100%)";
-              void leavingSlide.offsetWidth; // force reflow before re-enabling transition
-              leavingSlide.style.transition = "";
-              leavingVideo.pause();
-            }, SLIDE_MS + 40);
+          var seekHandled = false;
+          function onEnteringSeeked(){
+            if (seekHandled) return;
+            seekHandled = true;
+            enteringVideo.removeEventListener("seeked", onEnteringSeeked);
+            var ep = enteringVideo.play();
+            if (ep && ep.catch) ep.catch(function(){});
           }
+          enteringVideo.addEventListener("seeked", onEnteringSeeked);
+          try { enteringVideo.currentTime = targetTime; } catch(e){}
+          // Safety net in case "seeked" doesn't fire promptly.
+          setTimeout(onEnteringSeeked, 60);
 
-          enteringVideo.addEventListener("playing", function onPlaying(){
-            enteringVideo.removeEventListener("playing", onPlaying);
-            beginSlide();
-          });
+          leavingSlide.style.transform  = "translateX(-100%)";
+          enteringSlide.style.transform = "translateX(0%)";
 
-          try { enteringVideo.currentTime = 0; } catch(e){}
-          var p = enteringVideo.play();
-          if (p && p.catch) p.catch(beginSlide); // if playback is blocked, still slide so it never gets stuck
-
-          // Safety net: on the rare browser that delays the "playing"
-          // event, don't let the hero get stuck — start the slide anyway
-          // after a short, barely-noticeable wait.
-          setTimeout(beginSlide, 220);
+          // Once fully off-screen, snap the leaving slide back to the
+          // right (no transition) and pause its video, ready for its
+          // next turn — invisible to the viewer since it's outside the
+          // clipped .hero-video-wrap.
+          setTimeout(function(){
+            leavingSlide.style.transition = "none";
+            leavingSlide.style.transform = "translateX(100%)";
+            void leavingSlide.offsetWidth; // force reflow before re-enabling transition
+            leavingSlide.style.transition = "";
+            leavingVideo.pause();
+          }, SLIDE_MS + 40);
         }
 
-        videoA.addEventListener("ended", function(){
-          if (!firstCycleDone) {
+        function handleEnded(video, isA){
+          // If this "ended" is just the tail-end preroll finishing as the
+          // slide-in completes, rewind to the start and let it play its
+          // real, full pass in place — this does not count as a finished
+          // play and must not trigger the next slide.
+          if (video._preroll) {
+            video._preroll = false;
+            safePlay(video);
+            return;
+          }
+          if (isA && !firstCycleDone) {
             aReplayCount++;
-            if (aReplayCount < 2) { safePlay(videoA); return; }
+            if (aReplayCount < 2) { safePlay(video); return; }
             firstCycleDone = true;
           }
           slideToNext();
-        });
+        }
 
-        videoB.addEventListener("ended", function(){
-          slideToNext();
-        });
+        videoA.addEventListener("ended", function(){ handleEnded(videoA, true); });
+        videoB.addEventListener("ended", function(){ handleEnded(videoB, false); });
       })();
     </script>
 
