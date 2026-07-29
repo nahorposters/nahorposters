@@ -507,6 +507,26 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
   backface-visibility: hidden;
   transform: translateZ(0);
 }
+
+/* ---- Hero video slider (loop -> loop2 -> loop -> loop2 ... forever) ----
+   Two slides sit side by side; only `transform` is ever animated so the
+   transition stays on the GPU compositor (cheap, no layout/paint work). */
+.hero-slider{ position:absolute; inset:0; width:100%; height:100%; }
+.hero-slide{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transition: transform 1.15s cubic-bezier(.83,0,.17,1);
+  backface-visibility: hidden;
+}
+.hero-slide .hero-video{ backface-visibility: hidden; transform: translateZ(0); }
+#heroSlideB{ transform: translateX(100%); }
+
+@media (prefers-reduced-motion: reduce){
+  .hero-slide{ transition: none; }
+}
 .hero-eyebrow{
   font-family: var(--font-mono);
   font-size: 12px; letter-spacing: 0.2em; text-transform:uppercase;
@@ -1851,7 +1871,7 @@ pointer-events:auto;
 
 @media (max-width:700px){
 .hero{padding:0!important;padding-top:var(--header-h)!important;min-height:auto!important;display:block!important;}
-.hero-video-wrap{ position:static!important; inset:auto!important; width:100%!important; aspect-ratio:3/2; }
+.hero-video-wrap{ position:relative!important; inset:auto!important; width:100%!important; aspect-ratio:3/2; }
 .hero-content{margin-bottom:0!important;}
 .hero-scroll-cue{bottom:8px!important;}
 section{padding:10px 4.5vw!important;}
@@ -1963,20 +1983,36 @@ section{padding:10px 4.5vw!important;}
   <!-- ============================= -->
   <section class="hero" id="hero">
     <div class="hero-video-wrap">
-      <video
-        id="heroVideo"
-        class="hero-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="auto"
-        disablepictureinpicture
-        disableremoteplayback>
-        <source src="videos/hero-loop2.mp4" media="(min-width: 701px)" type="video/mp4">
-        <source src="videos/hero-loop.mp4" type="video/mp4">
-      </video>
-      <div id="heroVideoError" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:var(--font-mono); font-size:13px; color:#B23B3B; background:#FBEAEA;"></div>
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-slide" id="heroSlideA">
+          <video
+            id="heroVideoA"
+            class="hero-video"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            disablepictureinpicture
+            disableremoteplayback>
+            <source src="videos/hero-loop2.mp4" media="(min-width: 701px)" type="video/mp4">
+            <source src="videos/hero-loop.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="hero-slide" id="heroSlideB">
+          <video
+            id="heroVideoB"
+            class="hero-video"
+            muted
+            playsinline
+            preload="auto"
+            disablepictureinpicture
+            disableremoteplayback>
+            <source src="videos/hero-loop2_2.mp4" media="(min-width: 701px)" type="video/mp4">
+            <source src="videos/hero-loop2_1.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div id="heroVideoError" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:var(--font-mono); font-size:13px; color:#B23B3B; background:#FBEAEA; z-index:1;"></div>
     </div>
     <div class="hero-glow" id="heroGlow"></div>
     <div class="hero-noise"></div>
@@ -1987,13 +2023,94 @@ section{padding:10px 4.5vw!important;}
 
     <script>
       (function(){
-        var v = document.getElementById("heroVideo");
+        var slideA = document.getElementById("heroSlideA");
+        var slideB = document.getElementById("heroSlideB");
+        var videoA = document.getElementById("heroVideoA");
+        var videoB = document.getElementById("heroVideoB");
         var err = document.getElementById("heroVideoError");
-        v.addEventListener("error", function(){
-          var msg = "Video failed to load — check videos/hero-loop.mp4 and videos/hero-loop2.mp4 exist relative to this HTML file.";
+
+        function showError(v){
+          var msg = "Video failed to load — check that hero-loop.mp4, hero-loop2.mp4, hero-loop2_1.mp4 and hero-loop2_2.mp4 all exist inside the videos/ folder.";
           console.error(msg, v.error);
           err.textContent = msg;
           err.style.display = "flex";
+        }
+        videoA.addEventListener("error", function(){ showError(videoA); });
+        videoB.addEventListener("error", function(){ showError(videoB); });
+
+        // --- Cycle: hero-loop plays twice on first load, then hero-loop
+        // and hero-loop2 alternate forever, playing once each, with a
+        // smooth left-slide handoff between them every time. ---
+        var SLIDE_MS = 1150; // must match the .hero-slide transition duration
+        var active = "A";
+        var firstCycleDone = false;
+        var aReplayCount = 0;
+
+        function safePlay(video){
+          try { video.currentTime = 0; } catch(e){}
+          var p = video.play();
+          if (p && p.catch) p.catch(function(){});
+        }
+
+        function slideToNext(){
+          var leavingSlide  = active === "A" ? slideA : slideB;
+          var enteringSlide = active === "A" ? slideB : slideA;
+          var enteringVideo = active === "A" ? videoB : videoA;
+
+          active = active === "A" ? "B" : "A";
+
+          var started = false;
+          function beginSlide(){
+            if (started) return;
+            started = true;
+
+            // The clip is confirmed to be actually rendering frames now
+            // (not just "requested to play"), so the slide-in motion and
+            // the video's own motion start together — no frozen frame,
+            // no cut, just one continuous move from the very first frame.
+            leavingSlide.style.transform  = "translateX(-100%)";
+            enteringSlide.style.transform = "translateX(0%)";
+
+            // Once fully off-screen, snap the leaving slide back to the
+            // right (no transition) and pause its video, ready for its
+            // next turn — invisible to the viewer since it's outside the
+            // clipped .hero-video-wrap.
+            setTimeout(function(){
+              var leavingVideo = enteringVideo === videoA ? videoB : videoA;
+              leavingSlide.style.transition = "none";
+              leavingSlide.style.transform = "translateX(100%)";
+              void leavingSlide.offsetWidth; // force reflow before re-enabling transition
+              leavingSlide.style.transition = "";
+              leavingVideo.pause();
+            }, SLIDE_MS + 40);
+          }
+
+          enteringVideo.addEventListener("playing", function onPlaying(){
+            enteringVideo.removeEventListener("playing", onPlaying);
+            beginSlide();
+          });
+
+          try { enteringVideo.currentTime = 0; } catch(e){}
+          var p = enteringVideo.play();
+          if (p && p.catch) p.catch(beginSlide); // if playback is blocked, still slide so it never gets stuck
+
+          // Safety net: on the rare browser that delays the "playing"
+          // event, don't let the hero get stuck — start the slide anyway
+          // after a short, barely-noticeable wait.
+          setTimeout(beginSlide, 220);
+        }
+
+        videoA.addEventListener("ended", function(){
+          if (!firstCycleDone) {
+            aReplayCount++;
+            if (aReplayCount < 2) { safePlay(videoA); return; }
+            firstCycleDone = true;
+          }
+          slideToNext();
+        });
+
+        videoB.addEventListener("ended", function(){
+          slideToNext();
         });
       })();
     </script>
