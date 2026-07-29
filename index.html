@@ -6276,7 +6276,20 @@ function resolveCollectionItems(collectionName){
   /* ============================================================
      DRAWERS / MODALS / SEARCH — OPEN & CLOSE
      ============================================================ */
+  /* Locks background scroll the same way openModal does (captures the
+     current scrollY, pins body via position:fixed at that offset).
+     Shared by drawers (wishlist/cart) and modals so whichever opens
+     first "wins" the lock and whichever closes last releases it. */
+  function lockBodyScroll(){
+    if (!document.body.classList.contains("modal-open")){
+      const scrollY = window.scrollY;
+      document.body.dataset.scrollY = scrollY;
+      document.body.style.top = `-${scrollY}px`;
+      document.body.classList.add("modal-open");
+    }
+  }
   function openDrawer(id){
+    lockBodyScroll();
     document.getElementById(id).classList.add("open");
     document.getElementById("overlayScrim").classList.add("open");
   }
@@ -6284,18 +6297,17 @@ function resolveCollectionItems(collectionName){
     document.querySelectorAll(".side-drawer").forEach(d => d.classList.remove("open"));
     document.getElementById("overlayScrim").classList.remove("open");
     document.getElementById("searchPanel").classList.remove("open");
+    // Only release the scroll lock once nothing else (another drawer,
+    // an account modal, a quickview) is still open on top of it.
+    const stillOpen = document.querySelector(".side-drawer.open, .account-modal.open, .quickview-modal.open");
+    if (!stillOpen) unlockBodyScroll();
   }
   function openModal(id){
     // Only capture/lock scroll the first time (if a modal — e.g. the
     // Collection view — is already open, the body is already fixed at
     // scrollY:0, so re-capturing here would overwrite the real original
     // offset with 0 and break the eventual scroll restore).
-    if (!document.body.classList.contains("modal-open")){
-      const scrollY = window.scrollY;
-      document.body.dataset.scrollY = scrollY;
-      document.body.style.top = `-${scrollY}px`;
-      document.body.classList.add("modal-open");
-    }
+    lockBodyScroll();
 
     document.getElementById(id).classList.add("open");
 
@@ -6309,7 +6321,7 @@ function resolveCollectionItems(collectionName){
   function closeModal(id){
     const el = document.getElementById(id);
     if (el) el.classList.remove("open");
-    const stillOpen = document.querySelector(".account-modal.open, .quickview-modal.open");
+    const stillOpen = document.querySelector(".account-modal.open, .quickview-modal.open, .side-drawer.open");
     if (!stillOpen) scheduleUnlock(el);
   }
   /* Restoring the scroll position instantly (mid-fade) made whatever
@@ -6327,6 +6339,10 @@ function resolveCollectionItems(collectionName){
     unlockBodyScroll();
   }
   function unlockBodyScroll(){
+    // No-op if nothing is actually locked (e.g. closeDrawers running
+    // after a lock-free panel like search was the only thing open) —
+    // prevents an unwanted scroll jump on close.
+    if (!document.body.classList.contains("modal-open")) return;
     document.getElementById("modalScrim").classList.remove("open");
     const scrollY = parseInt(document.body.dataset.scrollY || "0");
     document.body.classList.remove("modal-open");
@@ -6340,7 +6356,8 @@ function resolveCollectionItems(collectionName){
     document.querySelectorAll(".account-modal, .quickview-modal")
         .forEach(m => m.classList.remove("open"));
 
-    scheduleUnlock(lastOne);
+    const stillOpen = document.querySelector(".side-drawer.open");
+    if (!stillOpen) scheduleUnlock(lastOne);
 }
   function initOverlays(){
     document.getElementById("cartToggle").addEventListener("click", () => openDrawer("cartDrawer"));
