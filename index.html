@@ -518,7 +518,7 @@ font-family:var(--font-display);font-size:clamp(34px,6vw,58px);font-weight:700;c
   width: 100%;
   height: 100%;
   will-change: transform;
-  transition: transform 1.15s cubic-bezier(.83,0,.17,1);
+  transition: transform .75s cubic-bezier(.65,0,.35,1);
   backface-visibility: hidden;
 }
 .hero-slide .hero-video{ backface-visibility: hidden; transform: translateZ(0); }
@@ -2041,7 +2041,7 @@ section{padding:10px 4.5vw!important;}
         // --- Cycle: hero-loop plays twice on first load, then hero-loop
         // and hero-loop2 alternate forever, playing once each, with a
         // smooth left-slide handoff between them every time. ---
-        var SLIDE_MS = 1150; // must match the .hero-slide transition duration
+        var SLIDE_MS = 750; // must match the .hero-slide transition duration
         var active = "A";
         var firstCycleDone = false;
         var aReplayCount = 0;
@@ -2061,44 +2061,22 @@ section{padding:10px 4.5vw!important;}
           active = active === "A" ? "B" : "A";
 
           // The clip that just finished ("ended") sits paused on its
-          // first frame for 1s (while it's already sliding out), then
+          // first frame for 0.5s (while it's already sliding out), then
           // starts playing from the top for the rest of its exit —
-          // a real 1s pause before playback resumes, not a jump into
+          // a real pause before playback resumes, not a jump into
           // the clip.
           try { leavingVideo.currentTime = 0; } catch(e){}
           leavingVideo.pause();
           setTimeout(function(){
             var lp = leavingVideo.play();
             if (lp && lp.catch) lp.catch(function(){});
-          }, 1000);
+          }, 500);
 
-          // The incoming clip slides in playing its own *tail end*, timed
-          // so it reaches its natural end right as it finishes sliding
-          // into place. Playback only starts once the seek to that tail
-          // position has actually landed — otherwise some browsers begin
-          // playing from wherever the clip was last left off before the
-          // seek finishes, which looked like it was starting mid-video.
-          // Once placed, its "ended" handler (below) catches that this
-          // was the preroll, rewinds it to the start, and lets it play
-          // through in full from there.
-          var dur = enteringVideo.duration;
-          var slideSec = SLIDE_MS / 1000;
-          var playFromTail = !!(dur && isFinite(dur) && dur > slideSec);
-          var targetTime = playFromTail ? (dur - slideSec) : 0;
-          enteringVideo._preroll = playFromTail;
-
-          var seekHandled = false;
-          function onEnteringSeeked(){
-            if (seekHandled) return;
-            seekHandled = true;
-            enteringVideo.removeEventListener("seeked", onEnteringSeeked);
-            var ep = enteringVideo.play();
-            if (ep && ep.catch) ep.catch(function(){});
-          }
-          enteringVideo.addEventListener("seeked", onEnteringSeeked);
-          try { enteringVideo.currentTime = targetTime; } catch(e){}
-          // Safety net in case "seeked" doesn't fire promptly.
-          setTimeout(onEnteringSeeked, 60);
+          // The incoming clip starts fresh at the same moment, so it's
+          // already playing from its first frame as it slides into view.
+          try { enteringVideo.currentTime = 0; } catch(e){}
+          var ep = enteringVideo.play();
+          if (ep && ep.catch) ep.catch(function(){});
 
           leavingSlide.style.transform  = "translateX(-100%)";
           enteringSlide.style.transform = "translateX(0%)";
@@ -2117,15 +2095,6 @@ section{padding:10px 4.5vw!important;}
         }
 
         function handleEnded(video, isA){
-          // If this "ended" is just the tail-end preroll finishing as the
-          // slide-in completes, rewind to the start and let it play its
-          // real, full pass in place — this does not count as a finished
-          // play and must not trigger the next slide.
-          if (video._preroll) {
-            video._preroll = false;
-            safePlay(video);
-            return;
-          }
           if (isA && !firstCycleDone) {
             aReplayCount++;
             if (aReplayCount < 2) { safePlay(video); return; }
